@@ -1,0 +1,2510 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pif Paf Connect - Central de Serviços & Indicações</title>
+    <meta name="description" content="Pif Paf Connect - Central de Serviços & Indicações: Ar-Condicionado & Climatização e Marido de Aluguel Profissional. Gere seu Ticket Digital de Pré-Orçamento pelo WhatsApp!">
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Pif Paf Connect">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230f172a'/><text x='50%' y='58%' dominant-baseline='middle' text-anchor='middle' font-size='54'>⚡</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230f172a'/><text x='50%' y='58%' dominant-baseline='middle' text-anchor='middle' font-size='54'>⚡</text></svg>">
+
+    <!-- FontAwesome 6 CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Alpine.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js" defer></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#eab308',     // Âmbar / Dourado Marido de Aluguel
+                        primaryDark: '#ca8a04',
+                        secondary: '#1c1917',   // Base Industrial Escura
+                        tertiary: '#292524',
+                        brandSky: '#0284c7',    // Azul Céu Climatização
+                        brandSkyLight: '#38bdf8'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    },
+                    backgroundImage: {
+                        'tools-pattern': "url('https://images.unsplash.com/photo-1581141849291-1125c7b692b5?auto=format&fit=crop&q=80')"
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Fundo escuro com grid simulando planta baixa */
+        .blueprint-bg {
+            background-color: #18181b;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+            background-size: 26px 26px;
+        }
+
+        /* Faixa listrada de aviso / segurança industrial */
+        .warning-stripe {
+            background: repeating-linear-gradient(
+                45deg,
+                #eab308,
+                #eab308 16px,
+                #1c1917 16px,
+                #1c1917 32px
+            );
+        }
+
+        /* Faixa listrada Azul Climatização */
+        .ac-stripe {
+            background: repeating-linear-gradient(
+                45deg,
+                #0ea5e9,
+                #0ea5e9 16px,
+                #0f172a 16px,
+                #0f172a 32px
+            );
+        }
+
+        /* Card de serviço com efeito hover e active */
+        .service-card {
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s, background-color 0.2s;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .service-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+        }
+
+        .service-card:active {
+            transform: scale(0.985);
+        }
+
+        /* Card selecionado Marido de Aluguel (Âmbar) */
+        .selected-card {
+            border-color: #eab308 !important;
+            background-color: #fefce8 !important;
+            box-shadow: 0 0 0 2px #eab308, 0 10px 15px -3px rgba(234, 179, 8, 0.25) !important;
+        }
+
+        /* Card selecionado Ar-Condicionado (Sky Blue) */
+        .selected-card-ac {
+            border-color: #0284c7 !important;
+            background-color: #f0f9ff !important;
+            box-shadow: 0 0 0 2px #0284c7, 0 10px 15px -3px rgba(2, 132, 199, 0.2) !important;
+        }
+
+        /* Prancheta física para o formulário */
+        .clipboard {
+            background-color: #f8fafc;
+            border-radius: 1.5rem;
+            padding-top: 3.75rem;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.8);
+            border: 4px solid #334155;
+        }
+
+        /* Clipe metálico superior da prancheta */
+        .clipboard-clip {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            height: 42px;
+            background: linear-gradient(180deg, #94a3b8 0%, #64748b 50%, #475569 100%);
+            border-radius: 8px 8px 12px 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.7);
+            border: 2px solid #334155;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .clipboard-clip::after {
+            content: '';
+            width: 65px;
+            height: 12px;
+            background: #1e293b;
+            border-radius: 4px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Ticket Digital com Notches Laterais Serrilhados */
+        .ticket-card {
+            position: relative;
+            background: #ffffff;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.25);
+            overflow: hidden;
+        }
+
+        .ticket-divider {
+            position: relative;
+            border-top: 2px dashed #cbd5e1;
+            margin: 1.5rem 0;
+        }
+
+        .ticket-divider::before,
+        .ticket-divider::after {
+            content: '';
+            position: absolute;
+            top: -14px;
+            width: 26px;
+            height: 26px;
+            background-color: var(--notch-bg, #0f172a);
+            border-radius: 9999px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .ticket-divider::before {
+            left: -38px;
+        }
+
+        .ticket-divider::after {
+            right: -38px;
+        }
+
+        /* Código de barras visual CSS */
+        .barcode-bars {
+            height: 44px;
+            width: 100%;
+            background-image: repeating-linear-gradient(
+                to right,
+                #0f172a 0px, #0f172a 3px,
+                transparent 3px, transparent 6px,
+                #0f172a 6px, #0f172a 7px,
+                transparent 7px, transparent 11px,
+                #0f172a 11px, #0f172a 15px,
+                transparent 15px, transparent 17px,
+                #0f172a 17px, #0f172a 19px,
+                transparent 19px, transparent 23px,
+                #0f172a 23px, #0f172a 28px,
+                transparent 28px, transparent 30px
+            );
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-16px) rotate(8deg); }
+        }
+
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        .animate-float-delayed { animation: float 8s ease-in-out infinite 2s; }
+        .animate-float-slow { animation: float 10s ease-in-out infinite 4s; }
+
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-sky-500 selection:text-white min-h-screen flex flex-col"
+      x-data="pifPafConnectApp()"
+      x-init="initApp()"
+      x-cloak>
+
+    <!-- TOAST DE FEEDBACK -->
+    <div x-show="toast.visivel"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 -translate-y-4"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 translate-y-0"
+         x-transition:leave-end="opacity-0 -translate-y-4"
+         class="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl border border-slate-700 flex items-center gap-3 text-sm font-semibold whitespace-nowrap">
+        <i :class="toast.icone" class="text-lg text-emerald-400"></i>
+        <span x-text="toast.mensagem"></span>
+    </div>
+
+    <!-- TOP BAR / HEADER GLOBAL -->
+    <header class="sticky top-0 z-40 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2">
+
+            <!-- Esquerda: Logo Pif Paf Connect ou Botão Voltar -->
+            <div class="flex items-center gap-2.5 sm:gap-3">
+                <button x-show="rotaAtual !== 'hub'"
+                        @click="navegarPara('hub')"
+                        type="button"
+                        class="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center border border-slate-700 transition active:scale-95"
+                        title="Voltar para a Central de Serviços">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+
+                <a href="#/" @click.prevent="navegarPara('hub')" class="flex items-center gap-2.5 group">
+                    <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center transition border"
+                         :class="rotaAtual === 'ar-condicionado'
+                            ? 'bg-sky-500/15 border-sky-400/40 text-sky-400'
+                            : (rotaAtual === 'marido-de-aluguel'
+                                ? 'bg-primary/15 border-primary/40 text-primary'
+                                : 'bg-gradient-to-br from-sky-500 to-amber-500 border-white/20 text-slate-950')">
+                        <i class="text-lg sm:text-xl transition-transform group-hover:scale-110"
+                           :class="rotaAtual === 'ar-condicionado'
+                                ? 'fa-solid fa-snowflake'
+                                : (rotaAtual === 'marido-de-aluguel'
+                                    ? 'fa-solid fa-hammer -rotate-45'
+                                    : 'fa-solid fa-bolt')"></i>
+                    </div>
+                    <div>
+                        <span class="text-base sm:text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-none">
+                            <template x-if="rotaAtual === 'marido-de-aluguel'">
+                                <span>MARIDO DE <span class="text-primary">ALUGUEL</span></span>
+                            </template>
+                            <template x-if="rotaAtual === 'ar-condicionado'">
+                                <span>CLIMA & <span class="text-sky-400">AR-CONDICIONADO</span></span>
+                            </template>
+                            <template x-if="rotaAtual === 'hub'">
+                                <span>PIF PAF <span class="text-sky-400">CONNECT</span></span>
+                            </template>
+                        </span>
+                        <span class="block text-[10px] sm:text-xs font-medium text-slate-400 mt-0.5 tracking-wider uppercase"
+                              x-text="rotaAtual === 'marido-de-aluguel' ? 'Reparos & Instalações' : (rotaAtual === 'ar-condicionado' ? 'Climatização Profissional' : 'Central de Serviços & Indicações')">
+                        </span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Centro: Atalhos Rápidos de Seção -->
+            <nav class="hidden md:flex items-center gap-2 bg-slate-800/90 p-1.5 rounded-xl border border-slate-700/80 text-xs font-bold">
+                <button type="button"
+                        @click="navegarPara('hub')"
+                        :class="rotaAtual === 'hub' ? 'bg-slate-950 text-white shadow' : 'text-slate-400 hover:text-white'"
+                        class="px-3.5 py-2 rounded-lg transition flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-Layer-group fa-table-cells-large text-emerald-400"></i>
+                    <span>Hub Central</span>
+                </button>
+                <button type="button"
+                        @click="navegarPara('ar-condicionado')"
+                        :class="rotaAtual === 'ar-condicionado' ? 'bg-sky-500 text-white shadow' : 'text-slate-400 hover:text-sky-300'"
+                        class="px-3.5 py-2 rounded-lg transition flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-snowflake"></i>
+                    <span>Ar-Condicionado</span>
+                </button>
+                <button type="button"
+                        @click="navegarPara('marido-de-aluguel')"
+                        :class="rotaAtual === 'marido-de-aluguel' ? 'bg-primary text-secondary shadow' : 'text-slate-400 hover:text-amber-300'"
+                        class="px-3.5 py-2 rounded-lg transition flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-hammer"></i>
+                    <span>Marido de Aluguel</span>
+                </button>
+            </nav>
+
+            <!-- Direita: Botão Virar App (PWA), WhatsApp Direto e Engrenagem -->
+            <div class="flex items-center gap-2">
+                <button type="button"
+                        @click="modalPwaAberto = true"
+                        class="inline-flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold py-2 px-3 rounded-xl transition active:scale-95 cursor-pointer"
+                        title="Como instalar como Aplicativo no Celular">
+                    <i class="fa-solid fa-mobile-screen-button text-sky-400"></i>
+                    <span class="hidden sm:inline">Virar App</span>
+                </button>
+
+                <button type="button"
+                        @click="abrirWhatsAppDireto('Olá! Gostaria de solicitar um atendimento pela Central Pif Paf Connect.')"
+                        class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs sm:text-sm font-bold py-2 px-3 sm:px-4 rounded-xl shadow-md transition active:scale-95 cursor-pointer">
+                    <i class="fa-brands fa-whatsapp text-base sm:text-lg"></i>
+                    <span class="hidden sm:inline">Atendimento</span>
+                </button>
+
+                <button type="button"
+                        @click="abrirModalConfig()"
+                        class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 flex items-center justify-center transition active:scale-95 cursor-pointer"
+                        title="Configurações de Contatos & Webhook">
+                    <i class="fa-solid fa-gear text-sm sm:text-base"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- =================================================================== -->
+    <!-- VIEW 1: HUB CENTRAL DE SERVIÇOS & INDICAÇÕES (ROTA: / )             -->
+    <!-- =================================================================== -->
+    <main x-show="rotaAtual === 'hub'" class="flex-1">
+        <!-- Hero Compacto Mobile-First -->
+        <section class="relative bg-slate-900 text-white overflow-hidden py-12 sm:py-16 border-b border-slate-800">
+            <div class="absolute inset-0 blueprint-bg opacity-60"></div>
+            <div class="absolute -top-24 -right-24 w-80 h-80 bg-sky-500/15 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -left-24 w-80 h-80 bg-amber-500/15 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-sky-300 text-xs font-bold uppercase tracking-wider mb-4">
+                    <i class="fa-solid fa-ticket text-amber-400"></i> Gerador de Ticket Digital de Pré-Orçamento
+                </div>
+
+                <h1 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
+                    Central de Serviços <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-cyan-300 to-amber-400">& Indicações</span>
+                </h1>
+
+                <p class="mt-3 sm:mt-4 max-w-2xl mx-auto text-sm sm:text-lg text-slate-300 leading-relaxed">
+                    Escolha a especialidade abaixo para gerar seu <strong class="text-white">Ticket de Atendimento Prioritário</strong> em poucos toques ou copie o link direto para enviar a um cliente.
+                </p>
+
+                <!-- Barra de Status Rápida -->
+                <div class="mt-6 inline-flex flex-wrap items-center justify-center gap-3 sm:gap-6 bg-slate-800/80 border border-slate-700/80 rounded-2xl px-4 py-2.5 text-xs text-slate-300">
+                    <span class="flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        Atendimento Online via WhatsApp
+                    </span>
+                    <span class="hidden sm:inline text-slate-600">•</span>
+                    <span class="flex items-center gap-1.5">
+                        <i class="fa-solid fa-bolt text-amber-400"></i>
+                        Resposta Rápida com Ticket #TCK
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Catálogo Principal do Hub -->
+        <section class="py-10 sm:py-14 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-lg sm:text-xl font-black text-slate-900 uppercase tracking-tight">
+                        Selecione o Serviço Desejado
+                    </h2>
+                    <p class="text-xs sm:text-sm text-slate-500">
+                        Toque em <strong>Iniciar Orçamento</strong> ou copie o link direto da especialidade
+                    </p>
+                </div>
+                <span class="text-xs font-bold bg-slate-200 text-slate-700 px-3 py-1 rounded-full"
+                      x-text="catalogoServicos.filter(s => s.ativo).length + ' Especialidades Ativas'"></span>
+            </div>
+
+            <!-- Cards Dinâmicos do Catálogo Extensível -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <template x-for="item in catalogoServicos" :key="item.slug">
+                    <div class="bg-white rounded-3xl border-2 transition-all overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-xl"
+                         :class="item.tema === 'sky' ? 'border-sky-100 hover:border-sky-400' : 'border-amber-100 hover:border-amber-400'">
+
+                        <!-- Topo colorido do card -->
+                        <div>
+                            <div class="h-2 w-full" :class="item.tema === 'sky' ? 'bg-gradient-to-r from-sky-500 to-cyan-400' : 'warning-stripe'"></div>
+                            <div class="p-6 sm:p-7">
+                                <div class="flex items-start justify-between gap-4 mb-4">
+                                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-sm shrink-0"
+                                         :class="item.tema === 'sky' ? 'bg-sky-50 text-sky-600 border border-sky-200' : 'bg-amber-50 text-amber-600 border border-amber-200'">
+                                        <i :class="item.icone"></i>
+                                    </div>
+                                    <span class="text-[11px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full"
+                                          :class="item.tema === 'sky' ? 'bg-sky-100 text-sky-800' : 'bg-amber-100 text-amber-900'"
+                                          x-text="item.badge"></span>
+                                </div>
+
+                                <h3 class="text-xl sm:text-2xl font-black text-slate-900 leading-tight" x-text="item.titulo"></h3>
+                                <p class="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed" x-text="item.descricao"></p>
+
+                                <!-- Tags de destaques do serviço -->
+                                <div class="mt-4 flex flex-wrap gap-1.5">
+                                    <template x-for="tag in item.tags" :key="tag">
+                                        <span class="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 flex items-center gap-1">
+                                            <i class="fa-solid fa-check text-[10px]" :class="item.tema === 'sky' ? 'text-sky-500' : 'text-amber-500'"></i>
+                                            <span x-text="tag"></span>
+                                        </span>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ações do Card: Iniciar Orçamento + Copiar Link Direto -->
+                        <div class="px-6 pb-6 pt-3 bg-slate-50/70 border-t border-slate-100 flex flex-col sm:flex-row gap-2.5">
+                            <button type="button"
+                                    @click="navegarPara(item.slug)"
+                                    class="flex-1 py-3.5 px-5 rounded-2xl font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 shadow-md transition active:scale-95 cursor-pointer"
+                                    :class="item.tema === 'sky'
+                                        ? 'bg-sky-600 hover:bg-sky-500 text-white'
+                                        : 'bg-primary hover:bg-primaryDark text-secondary'">
+                                <span>Iniciar Orçamento</span>
+                                <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </button>
+
+                            <button type="button"
+                                    @click="copiarLinkDireto(item.slug, item.titulo)"
+                                    class="py-3.5 px-4 rounded-2xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer"
+                                    title="Copiar Link Direto deste serviço">
+                                <i class="fa-solid fa-link text-slate-500"></i>
+                                <span>Copiar Link Direto</span>
+                            </button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Card de Compartilhamento Geral do Hub -->
+            <div class="mt-8 bg-slate-900 text-white rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl border border-slate-800">
+                <div class="flex items-center gap-4 text-center sm:text-left flex-col sm:flex-row">
+                    <div class="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-2xl text-amber-400 shrink-0">
+                        <i class="fa-solid fa-share-nodes"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-base sm:text-lg font-extrabold">Indique ou compartilhe a Central Completa</h4>
+                        <p class="text-xs sm:text-sm text-slate-400 mt-0.5">
+                            Copie o link geral do Hub ou instale como aplicativo na tela inicial do seu celular.
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2.5 w-full sm:w-auto">
+                    <button type="button"
+                            @click="copiarLinkDireto('', 'Hub Central Pif Paf Connect')"
+                            class="flex-1 sm:flex-initial py-3 px-4 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition cursor-pointer">
+                        <i class="fa-regular fa-copy"></i>
+                        <span>Copiar Link Geral</span>
+                    </button>
+                    <button type="button"
+                            @click="modalPwaAberto = true"
+                            class="flex-1 sm:flex-initial py-3 px-4 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs sm:text-sm font-extrabold flex items-center justify-center gap-2 transition cursor-pointer">
+                        <i class="fa-solid fa-download"></i>
+                        <span>Instalar App</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- =================================================================== -->
+    <!-- VIEW 2: FLUXO AR-CONDICIONADO & CLIMATIZAÇÃO (ROTA: /#ar-condicionado) -->
+    <!-- =================================================================== -->
+    <main x-show="rotaAtual === 'ar-condicionado'" class="flex-1 bg-slate-100">
+        <!-- Faixa Superior Climatização -->
+        <div class="ac-stripe h-2 w-full"></div>
+
+        <!-- Hero Climatização -->
+        <section class="relative bg-slate-900 text-white py-10 sm:py-14 border-b border-slate-800 overflow-hidden">
+            <div class="absolute inset-0 blueprint-bg opacity-60"></div>
+            <div class="absolute -right-10 -top-10 text-sky-400/10 pointer-events-none">
+                <i class="fa-solid fa-snowflake text-[160px] animate-float"></i>
+            </div>
+
+            <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/20 border border-sky-400/30 text-sky-300 text-xs font-bold uppercase tracking-wider">
+                        <i class="fa-solid fa-snowflake"></i> Climatização & Ar-Condicionado
+                    </span>
+
+                    <button type="button"
+                            @click="copiarLinkDireto('ar-condicionado', 'Ar-Condicionado & Climatização')"
+                            class="inline-flex items-center gap-1.5 text-xs font-bold bg-white/10 hover:bg-white/20 text-slate-200 px-3 py-1.5 rounded-xl border border-white/15 transition cursor-pointer">
+                        <i class="fa-solid fa-link text-sky-400"></i>
+                        <span>Copiar Link Direto do Ar</span>
+                    </button>
+                </div>
+
+                <h1 class="text-2xl sm:text-4xl font-black tracking-tight uppercase">
+                    Orçamento Rápido de <span class="text-sky-400">Climatização</span>
+                </h1>
+                <p class="text-slate-300 text-sm sm:text-base mt-1.5 max-w-2xl">
+                    Responda em 3 passos rápidos com toques na tela para gerar seu Ticket Digital com cálculo de potência e atendimento prioritário.
+                </p>
+
+                <!-- Barra de Progresso das 4 Etapas -->
+                <div class="mt-8 grid grid-cols-4 gap-2 sm:gap-3">
+                    <template x-for="(label, idx) in ['1. Objetivo', '2. Potência / Aparelho', '3. Local & Dados', '4. Ticket Digital']" :key="idx">
+                        <button type="button"
+                                @click="irParaEtapaAr(idx + 1)"
+                                class="text-left p-2.5 sm:p-3 rounded-xl border transition-all cursor-pointer"
+                                :class="ar.etapa === (idx + 1)
+                                    ? 'bg-sky-500/20 border-sky-400 text-white shadow-sm'
+                                    : (ar.etapa > (idx + 1)
+                                        ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300'
+                                        : 'bg-slate-800/70 border-slate-700 text-slate-400')">
+                            <div class="flex items-center justify-between text-[11px] font-bold uppercase">
+                                <span x-text="'Etapa ' + (idx + 1)"></span>
+                                <i class="fa-solid text-xs"
+                                   :class="ar.etapa > (idx + 1) ? 'fa-circle-check text-emerald-400' : (ar.etapa === (idx + 1) ? 'fa-circle-dot text-sky-400' : 'fa-circle text-slate-600')"></i>
+                            </div>
+                            <p class="text-xs sm:text-sm font-extrabold truncate mt-0.5" x-text="label"></p>
+                        </button>
+                    </template>
+                </div>
+            </div>
+        </section>
+
+        <!-- Conteúdo das 4 Etapas do Ar-Condicionado -->
+        <section class="py-8 sm:py-12 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            <!-- ETAPA 1: OBJETIVO -->
+            <div x-show="ar.etapa === 1" class="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm">
+                <div class="mb-6">
+                    <span class="text-xs font-extrabold uppercase tracking-wider text-sky-600 bg-sky-50 px-3 py-1 rounded-full">Etapa 1 de 4</span>
+                    <h2 class="text-xl sm:text-2xl font-black text-slate-900 mt-2">Qual é o seu objetivo principal?</h2>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1">Toque na opção desejada para avançar:</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
+                    <template x-for="obj in opcoesObjetivoAr" :key="obj.id">
+                        <div @click="selecionarObjetivoAr(obj)"
+                             :class="ar.objetivo === obj.nome ? 'selected-card-ac' : 'bg-white border-slate-200 hover:border-sky-300'"
+                             class="service-card border-2 rounded-2xl p-4 sm:p-5 flex items-start gap-4 relative">
+                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl shrink-0 transition"
+                                 :class="ar.objetivo === obj.nome ? 'bg-sky-600 text-white' : 'bg-sky-50 text-sky-600'">
+                                <i :class="'fa-solid ' + obj.icone"></i>
+                            </div>
+                            <div class="pr-6">
+                                <h3 class="font-extrabold text-slate-900 text-base leading-snug" x-text="obj.nome"></h3>
+                                <p class="text-xs text-slate-500 mt-1 leading-relaxed" x-text="obj.descricao"></p>
+                                <span x-show="obj.id === 'comprar_instalar'"
+                                      class="inline-block mt-2 text-[10px] font-extrabold uppercase tracking-wider bg-sky-100 text-sky-800 px-2 py-0.5 rounded-md">
+                                    Inclui Calculadora de BTUs
+                                </span>
+                            </div>
+                            <div x-show="ar.objetivo === obj.nome"
+                                 class="absolute top-4 right-4 w-6 h-6 rounded-full bg-sky-600 text-white flex items-center justify-center text-xs">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <div class="mt-8 flex justify-end">
+                    <button type="button"
+                            :disabled="!ar.objetivo"
+                            @click="ar.etapa = 2"
+                            :class="!ar.objetivo ? 'opacity-40 cursor-not-allowed bg-slate-300 text-slate-600' : 'bg-sky-600 hover:bg-sky-500 text-white shadow-lg cursor-pointer'"
+                            class="w-full sm:w-auto px-8 py-4 rounded-2xl font-extrabold text-base flex items-center justify-center gap-2 transition">
+                        <span>Continuar para Etapa 2</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ETAPA 2: CONDICIONAL (CALCULADORA DE BTUs OU SELEÇÃO DE APARELHO) -->
+            <div x-show="ar.etapa === 2" class="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm">
+                <div class="flex items-center justify-between flex-wrap gap-2 mb-6">
+                    <div>
+                        <span class="text-xs font-extrabold uppercase tracking-wider text-sky-600 bg-sky-50 px-3 py-1 rounded-full">Etapa 2 de 4</span>
+                        <h2 class="text-xl sm:text-2xl font-black text-slate-900 mt-2"
+                            x-text="ar.objetivo === 'Comprar + Instalar' ? 'Calculadora Inteligente de BTUs' : 'Detalhes do(s) Aparelho(s)'"></h2>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-0.5"
+                           x-text="ar.objetivo === 'Comprar + Instalar' ? 'Informe o tamanho do ambiente e incidência solar para recomendação imediata:' : 'Selecione o modelo, potência aproximada e quantidade:'"></p>
+                    </div>
+                    <span class="text-xs font-bold bg-slate-100 text-slate-700 px-3 py-1.5 rounded-xl border border-slate-200">
+                        Objetivo: <strong class="text-sky-700" x-text="ar.objetivo"></strong>
+                    </span>
+                </div>
+
+                <!-- MODO A: SE ESCOLHEU "COMPRAR + INSTALAR" -> CALCULADORA DE BTUs EM TEMPO REAL -->
+                <div x-show="ar.objetivo === 'Comprar + Instalar'" class="space-y-6">
+                    <!-- 1. Área em m² -->
+                    <div>
+                        <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-600 mb-2.5">
+                            1. Tamanho Aproximado do Ambiente (m²)
+                        </label>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            <template x-for="area in opcoesAreaM2" :key="area.id">
+                                <button type="button"
+                                        @click="ar.areaM2 = area.id"
+                                        :class="ar.areaM2 === area.id ? 'selected-card-ac text-sky-900' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'"
+                                        class="service-card border-2 rounded-2xl p-3.5 text-center cursor-pointer">
+                                    <span class="block text-base font-black" x-text="area.label"></span>
+                                    <span class="block text-[11px] text-slate-500 mt-0.5" x-text="area.exemplo"></span>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- 2. Incidência de Sol -->
+                    <div>
+                        <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-600 mb-2.5">
+                            2. Incidência de Sol no Ambiente
+                        </label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <button type="button"
+                                    @click="ar.incidenciaSol = 'Sol da Manhã / Sombra'"
+                                    :class="ar.incidenciaSol === 'Sol da Manhã / Sombra' ? 'selected-card-ac' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'"
+                                    class="service-card border-2 rounded-2xl p-4 flex items-center gap-3.5 text-left cursor-pointer">
+                                <div class="w-11 h-11 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl shrink-0">
+                                    <i class="fa-solid fa-cloud-sun"></i>
+                                </div>
+                                <div>
+                                    <span class="block font-extrabold text-slate-900 text-sm sm:text-base">Sol da Manhã / Sombra</span>
+                                    <span class="block text-xs text-slate-500">Ambiente mais fresco ou sol leve</span>
+                                </div>
+                            </button>
+
+                            <button type="button"
+                                    @click="ar.incidenciaSol = 'Sol da Tarde / Intenso'"
+                                    :class="ar.incidenciaSol === 'Sol da Tarde / Intenso' ? 'selected-card-ac' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'"
+                                    class="service-card border-2 rounded-2xl p-4 flex items-center gap-3.5 text-left cursor-pointer">
+                                <div class="w-11 h-11 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center text-xl shrink-0">
+                                    <i class="fa-solid fa-sun"></i>
+                                </div>
+                                <div>
+                                    <span class="block font-extrabold text-slate-900 text-sm sm:text-base">Sol da Tarde / Intenso</span>
+                                    <span class="block text-xs text-slate-500">Exige reforço térmico (+BTUs)</span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 3. Tecnologia Desejada -->
+                    <div>
+                        <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-600 mb-2.5">
+                            3. Tecnologia Preferida
+                        </label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <button type="button"
+                                    @click="ar.tecnologia = 'Inverter (Mais Econômico)'"
+                                    :class="ar.tecnologia === 'Inverter (Mais Econômico)' ? 'selected-card-ac' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'"
+                                    class="service-card border-2 rounded-2xl p-4 flex items-center gap-3.5 text-left cursor-pointer">
+                                <div class="w-11 h-11 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl shrink-0">
+                                    <i class="fa-solid fa-leaf"></i>
+                                </div>
+                                <div>
+                                    <span class="block font-extrabold text-slate-900 text-sm sm:text-base">Inverter (Recomendado)</span>
+                                    <span class="block text-xs text-slate-500">Até 60% de economia de energia e silencioso</span>
+                                </div>
+                            </button>
+
+                            <button type="button"
+                                    @click="ar.tecnologia = 'Convencional'"
+                                    :class="ar.tecnologia === 'Convencional' ? 'selected-card-ac' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'"
+                                    class="service-card border-2 rounded-2xl p-4 flex items-center gap-3.5 text-left cursor-pointer">
+                                <div class="w-11 h-11 rounded-xl bg-slate-200 text-slate-700 flex items-center justify-center text-xl shrink-0">
+                                    <i class="fa-solid fa-fan"></i>
+                                </div>
+                                <div>
+                                    <span class="block font-extrabold text-slate-900 text-sm sm:text-base">Convencional</span>
+                                    <span class="block text-xs text-slate-500">Menor custo inicial de aquisição</span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- SELO DE POTÊNCIA RECOMENDADA EM TEMPO REAL -->
+                    <div class="bg-gradient-to-r from-sky-900 via-slate-900 to-sky-950 text-white rounded-3xl p-5 sm:p-6 border-2 border-sky-400/50 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="flex items-center gap-4 text-center sm:text-left flex-col sm:flex-row">
+                            <div class="w-14 h-14 rounded-2xl bg-sky-500/20 border border-sky-400/40 flex items-center justify-center text-3xl text-sky-300 shrink-0">
+                                <i class="fa-solid fa-gauge-high"></i>
+                            </div>
+                            <div>
+                                <span class="text-[11px] font-extrabold uppercase tracking-widest text-sky-300 block">
+                                    Selo de Potência Recomendada
+                                </span>
+                                <h4 class="text-2xl sm:text-3xl font-black text-white tracking-tight mt-0.5"
+                                    x-text="calcularBtusRecomendados().btus"></h4>
+                                <p class="text-xs text-slate-300 mt-0.5"
+                                   x-text="calcularBtusRecomendados().detalhe"></p>
+                            </div>
+                        </div>
+                        <div class="bg-sky-500 text-slate-950 font-black text-xs uppercase px-3.5 py-2 rounded-xl tracking-wider shrink-0">
+                            <i class="fa-solid fa-circle-check mr-1"></i> Dimensionamento Ideal
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODO B: SE ESCOLHEU OUTROS SERVIÇOS -> APARELHO, BTUs E QUANTIDADE -->
+                <div x-show="ar.objetivo !== 'Comprar + Instalar'" class="space-y-6">
+                    <!-- 1. Tipo de Aparelho -->
+                    <div>
+                        <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-600 mb-2.5">
+                            1. Tipo de Aparelho
+                        </label>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            <template x-for="mod in ['Split', 'Janela', 'Cassete', 'Portátil']" :key="mod">
+                                <button type="button"
+                                        @click="ar.tipoAparelho = mod"
+                                        :class="ar.tipoAparelho === mod ? 'selected-card-ac text-sky-900' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'"
+                                        class="service-card border-2 rounded-2xl p-4 text-center cursor-pointer">
+                                    <i class="fa-solid fa-wind text-sky-600 text-lg mb-1.5 block"></i>
+                                    <span class="font-extrabold text-sm block" x-text="mod"></span>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- 2. BTUs Aproximados -->
+                    <div>
+                        <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-600 mb-2.5">
+                            2. Potência Aproximada (BTUs)
+                        </label>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                            <template x-for="pot in ['9.000 BTUs', '12.000 BTUs', '18.000 BTUs', '24.000+ BTUs', 'Multi-Split', 'Não sei informar']" :key="pot">
+                                <button type="button"
+                                        @click="ar.btusManual = pot"
+                                        :class="ar.btusManual === pot ? 'selected-card-ac text-sky-900 font-black' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 font-bold'"
+                                        class="service-card border-2 rounded-xl py-3 px-3 text-xs sm:text-sm text-center cursor-pointer"
+                                        x-text="pot">
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quantidade de Aparelhos (Comum aos dois modos) -->
+                <div class="mt-6 pt-6 border-t border-slate-200">
+                    <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-600 mb-2.5">
+                        Quantidade de Aparelhos
+                    </label>
+                    <div class="grid grid-cols-4 gap-3">
+                        <template x-for="qtd in ['1 aparelho', '2 aparelhos', '3 aparelhos', '4 ou mais']" :key="qtd">
+                            <button type="button"
+                                    @click="ar.quantidade = qtd"
+                                    :class="ar.quantidade === qtd ? 'selected-card-ac text-sky-900 font-black' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 font-bold'"
+                                    class="service-card border-2 rounded-xl py-3 px-2 text-xs sm:text-sm text-center cursor-pointer"
+                                    x-text="qtd">
+                            </button>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Botões de Navegação Etapa 2 -->
+                <div class="mt-8 flex items-center justify-between gap-3">
+                    <button type="button"
+                            @click="ar.etapa = 1"
+                            class="px-5 py-3.5 rounded-2xl border border-slate-300 text-slate-700 font-bold text-sm hover:bg-slate-100 transition cursor-pointer">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> Voltar
+                    </button>
+                    <button type="button"
+                            @click="ar.etapa = 3"
+                            class="flex-1 sm:flex-initial px-8 py-4 rounded-2xl bg-sky-600 hover:bg-sky-500 text-white font-extrabold text-base shadow-lg flex items-center justify-center gap-2 transition cursor-pointer">
+                        <span>Continuar para Etapa 3</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ETAPA 3: CONDIÇÕES DO LOCAL & DADOS DO CLIENTE -->
+            <div x-show="ar.etapa === 3" class="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
+                <div>
+                    <span class="text-xs font-extrabold uppercase tracking-wider text-sky-600 bg-sky-50 px-3 py-1 rounded-full">Etapa 3 de 4</span>
+                    <h2 class="text-xl sm:text-2xl font-black text-slate-900 mt-2">Condições do Local & Identificação</h2>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Para emitir seu Ticket Digital, informe os detalhes básicos do imóvel:</p>
+                </div>
+
+                <!-- 1. Tipo de Imóvel -->
+                <div>
+                    <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-600 mb-2.5">
+                        1. Tipo de Imóvel
+                    </label>
+                    <div class="grid grid-cols-3 gap-3">
+                        <template x-for="imv in [
+                            { nome: 'Casa', icone: 'fa-house' },
+                            { nome: 'Apartamento', icone: 'fa-building' },
+                            { nome: 'Comercial', icone: 'fa-store' }
+                        ]" :key="imv.nome">
+                            <button type="button"
+                                    @click="ar.tipoImovel = imv.nome"
+                                    :class="ar.tipoImovel === imv.nome ? 'selected-card-ac text-sky-900' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'"
+                                    class="service-card border-2 rounded-2xl p-4 text-center cursor-pointer">
+                                <i :class="'fa-solid ' + imv.icone" class="text-xl text-sky-600 mb-1.5 block"></i>
+                                <span class="text-xs sm:text-sm font-extrabold block" x-text="imv.nome"></span>
+                            </button>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- 2. Situação da Tubulação -->
+                <div>
+                    <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-600 mb-2.5">
+                        2. Infraestrutura / Tubulação de Cobre
+                    </label>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <template x-for="tub in [
+                            { nome: 'Pronta na parede', desc: 'Já possui espera/caixa', icone: 'fa-circle-check' },
+                            { nome: 'Fazer do zero', desc: 'Precisa passar infraestrutura', icone: 'fa-screwdriver-wrench' },
+                            { nome: 'Não sei', desc: 'Avaliar no atendimento', icone: 'fa-circle-question' }
+                        ]" :key="tub.nome">
+                            <button type="button"
+                                    @click="ar.tubulacao = tub.nome"
+                                    :class="ar.tubulacao === tub.nome ? 'selected-card-ac text-sky-900' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'"
+                                    class="service-card border-2 rounded-2xl p-4 text-left cursor-pointer">
+                                <div class="flex items-center gap-2 font-extrabold text-sm">
+                                    <i :class="'fa-solid ' + tub.icone" class="text-sky-600"></i>
+                                    <span x-text="tub.nome"></span>
+                                </div>
+                                <p class="text-xs text-slate-500 mt-1" x-text="tub.desc"></p>
+                            </button>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- 3. Nome, WhatsApp/Telefone e Bairro/Cidade -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                    <div>
+                        <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-600 mb-1.5">
+                            Seu Nome *
+                        </label>
+                        <input type="text"
+                               x-model="ar.clienteNome"
+                               placeholder="Ex: Carlos Eduardo"
+                               class="w-full rounded-xl border-2 border-slate-200 focus:border-sky-500 focus:outline-none px-4 py-3 text-sm font-semibold text-slate-900">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-600 mb-1.5">
+                            Seu WhatsApp / Telefone *
+                        </label>
+                        <input type="tel"
+                               x-model="ar.clienteTelefone"
+                               @input="mascararTelefoneAr($event)"
+                               maxlength="15"
+                               placeholder="(47) 99999-9999"
+                               class="w-full rounded-xl border-2 border-slate-200 focus:border-sky-500 focus:outline-none px-4 py-3 text-sm font-semibold text-slate-900">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-600 mb-1.5">
+                            Bairro / Cidade *
+                        </label>
+                        <input type="text"
+                               x-model="ar.clienteLocal"
+                               placeholder="Ex: Centro - Balneário Camboriú"
+                               class="w-full rounded-xl border-2 border-slate-200 focus:border-sky-500 focus:outline-none px-4 py-3 text-sm font-semibold text-slate-900">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-600 mb-1.5">
+                        Observações Adicionais (Opcional)
+                    </label>
+                    <input type="text"
+                           x-model="ar.observacoes"
+                           placeholder="Ex: Preciso de atendimento no período da tarde, marca preferida LG/Midea..."
+                           class="w-full rounded-xl border-2 border-slate-200 focus:border-sky-500 focus:outline-none px-4 py-3 text-sm text-slate-800">
+                </div>
+
+                <!-- Botões de Navegação Etapa 3 -->
+                <div class="pt-4 flex items-center justify-between gap-3">
+                    <button type="button"
+                            @click="ar.etapa = 2"
+                            class="px-5 py-3.5 rounded-2xl border border-slate-300 text-slate-700 font-bold text-sm hover:bg-slate-100 transition cursor-pointer">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> Voltar
+                    </button>
+                    <button type="button"
+                            @click="gerarTicketAr()"
+                            class="flex-1 sm:flex-initial px-8 py-4 rounded-2xl bg-sky-600 hover:bg-sky-500 text-white font-extrabold text-base shadow-lg flex items-center justify-center gap-2 transition cursor-pointer">
+                        <i class="fa-solid fa-ticket"></i>
+                        <span>Gerar Ticket Digital</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ETAPA 4: TICKET DIGITAL DE CLIMATIZAÇÃO -->
+            <div x-show="ar.etapa === 4" class="bg-slate-900 rounded-3xl p-5 sm:p-8 shadow-2xl border border-slate-800" style="--notch-bg: #0f172a;">
+                <div class="text-center mb-6">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-xs font-extrabold uppercase tracking-wider">
+                        <i class="fa-solid fa-circle-check"></i> Pré-Orçamento Emitido
+                    </span>
+                    <h2 class="text-xl sm:text-2xl font-black text-white mt-2">Ticket Digital de Climatização</h2>
+                    <p class="text-xs sm:text-sm text-slate-400">Envie abaixo para iniciar seu atendimento prioritário no WhatsApp</p>
+                </div>
+
+                <!-- Comprovante / Ticket -->
+                <div class="ticket-card max-w-lg mx-auto p-6 sm:p-8 text-slate-800">
+                    <!-- Cabeçalho do Ticket -->
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <span class="text-[10px] font-black uppercase tracking-widest text-sky-600 block">PIF PAF CONNECT • CLIMATIZAÇÃO</span>
+                            <h3 class="text-2xl font-black font-mono text-slate-900 tracking-tight" x-text="ar.ticketId"></h3>
+                            <p class="text-xs text-slate-500 font-medium mt-0.5" x-text="'Emitido em ' + ar.dataHoraEmissao"></p>
+                        </div>
+                        <span class="bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-black uppercase px-2.5 py-1 rounded-lg flex items-center gap-1 shrink-0">
+                            <i class="fa-solid fa-star text-amber-500"></i> Prioritário
+                        </span>
+                    </div>
+
+                    <div class="ticket-divider"></div>
+
+                    <!-- Resumo Estruturado -->
+                    <div class="space-y-3 text-xs sm:text-sm">
+                        <div class="flex justify-between gap-2 py-1 border-b border-slate-100">
+                            <span class="text-slate-500 font-medium">Serviço / Objetivo:</span>
+                            <span class="font-extrabold text-slate-900 text-right" x-text="ar.objetivo"></span>
+                        </div>
+
+                        <template x-if="ar.objetivo === 'Comprar + Instalar'">
+                            <div class="space-y-3">
+                                <div class="flex justify-between gap-2 py-1 border-b border-slate-100">
+                                    <span class="text-slate-500 font-medium">Dimensionamento:</span>
+                                    <span class="font-extrabold text-sky-700 text-right" x-text="calcularBtusRecomendados().btus + ' (' + ar.tecnologia + ')'"></span>
+                                </div>
+                                <div class="flex justify-between gap-2 py-1 border-b border-slate-100">
+                                    <span class="text-slate-500 font-medium">Ambiente / Sol:</span>
+                                    <span class="font-bold text-slate-800 text-right" x-text="obterLabelAreaM2(ar.areaM2) + ' • ' + ar.incidenciaSol"></span>
+                                </div>
+                            </div>
+                        </template>
+
+                        <template x-if="ar.objetivo !== 'Comprar + Instalar'">
+                            <div class="flex justify-between gap-2 py-1 border-b border-slate-100">
+                                <span class="text-slate-500 font-medium">Aparelho / Potência:</span>
+                                <span class="font-extrabold text-slate-900 text-right" x-text="ar.tipoAparelho + ' • ' + ar.btusManual"></span>
+                            </div>
+                        </template>
+
+                        <div class="flex justify-between gap-2 py-1 border-b border-slate-100">
+                            <span class="text-slate-500 font-medium">Quantidade:</span>
+                            <span class="font-bold text-slate-800 text-right" x-text="ar.quantidade"></span>
+                        </div>
+
+                        <div class="flex justify-between gap-2 py-1 border-b border-slate-100">
+                            <span class="text-slate-500 font-medium">Imóvel / Tubulação:</span>
+                            <span class="font-bold text-slate-800 text-right" x-text="ar.tipoImovel + ' • ' + ar.tubulacao"></span>
+                        </div>
+
+                        <div class="flex justify-between gap-2 py-1 border-b border-slate-100">
+                            <span class="text-slate-500 font-medium">Cliente:</span>
+                            <span class="font-extrabold text-slate-900 text-right" x-text="ar.clienteNome || 'Não informado'"></span>
+                        </div>
+
+                        <div class="flex justify-between gap-2 py-1 border-b border-slate-100">
+                            <span class="text-slate-500 font-medium">WhatsApp / Telefone:</span>
+                            <span class="font-extrabold text-sky-700 text-right" x-text="ar.clienteTelefone || 'Não informado'"></span>
+                        </div>
+
+                        <div class="flex justify-between gap-2 py-1">
+                            <span class="text-slate-500 font-medium">Localização:</span>
+                            <span class="font-bold text-slate-800 text-right" x-text="ar.clienteLocal || 'Não informado'"></span>
+                        </div>
+
+                        <div x-show="ar.observacoes.trim()" class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs">
+                            <span class="font-bold text-slate-600 block mb-0.5">Observações:</span>
+                            <span class="text-slate-800" x-text="ar.observacoes"></span>
+                        </div>
+                    </div>
+
+                    <div class="ticket-divider"></div>
+
+                    <!-- Código de Barras Visual -->
+                    <div class="text-center">
+                        <div class="barcode-bars opacity-85"></div>
+                        <span class="text-[10px] font-mono tracking-[0.25em] text-slate-400 block mt-1.5" x-text="ar.ticketId + '-CLIMA-2026'"></span>
+                    </div>
+                </div>
+
+                <!-- Botões de Ação do Ticket -->
+                <div class="max-w-lg mx-auto mt-6 space-y-3">
+                    <button type="button"
+                            @click="dispararTicketArWhatsApp()"
+                            class="w-full py-4 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-extrabold text-base sm:text-lg shadow-xl flex items-center justify-center gap-3 transition transform hover:scale-[1.01] cursor-pointer">
+                        <i class="fa-brands fa-whatsapp text-2xl"></i>
+                        <span>Enviar Ticket para Orçamento no WhatsApp</span>
+                    </button>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <button type="button"
+                                @click="copiarResumoTicketAr()"
+                                class="py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition cursor-pointer">
+                            <i class="fa-regular fa-copy text-sky-400"></i>
+                            <span>Copiar Resumo em Texto</span>
+                        </button>
+
+                        <button type="button"
+                                @click="ar.etapa = 1"
+                                class="py-3 px-4 rounded-xl bg-slate-800/60 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition cursor-pointer">
+                            <i class="fa-solid fa-rotate-left"></i>
+                            <span>Editar Dados do Ticket</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ======================================================================== -->
+    <!-- VIEW 3: MARIDO DE ALUGUEL PROFISSIONAL (ROTA: /#marido-de-aluguel)       -->
+    <!-- Mantém toda a estrutura original + Ticket Digital + Contato da Lalá      -->
+    <!-- ======================================================================== -->
+    <main x-show="rotaAtual === 'marido-de-aluguel'" class="flex-1 bg-stone-100 text-stone-800">
+        <!-- FAIXA DECORATIVA SUPERIOR -->
+        <div class="warning-stripe h-2.5 w-full"></div>
+
+        <!-- 4.2. HERO MARIDO DE ALUGUEL (ORIGINAL PRESERVADO) -->
+        <section class="relative bg-secondary overflow-hidden py-16 lg:py-28 border-b border-stone-800">
+            <!-- Imagem de Fundo com 30% de Opacidade -->
+            <div class="absolute inset-0 bg-tools-pattern bg-cover bg-center opacity-30 mix-blend-luminosity"></div>
+
+            <!-- Sobreposição Blueprint Grid -->
+            <div class="absolute inset-0 blueprint-bg opacity-75"></div>
+
+            <!-- Ícones FontAwesome Flutuantes Grandes -->
+            <div class="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+                <i class="fa-solid fa-hammer text-7xl sm:text-9xl text-primary opacity-20 absolute -top-4 left-8 sm:left-24 rotate-12 animate-float"></i>
+                <i class="fa-solid fa-wrench text-8xl sm:text-9xl text-white opacity-20 absolute top-1/3 right-6 sm:right-28 -rotate-45 animate-float-delayed"></i>
+                <i class="fa-solid fa-screwdriver-wrench text-7xl sm:text-9xl text-primary opacity-20 absolute bottom-12 left-1/4 rotate-45 animate-float-slow"></i>
+                <i class="fa-solid fa-faucet text-6xl sm:text-8xl text-white opacity-10 absolute bottom-16 right-1/4 -rotate-12 animate-float"></i>
+            </div>
+
+            <div class="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <!-- Badge Superior + Botão Copiar Link Direto -->
+                <div class="flex flex-wrap items-center justify-center gap-2 mb-6">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/15 border border-primary/30 text-primary text-xs sm:text-sm font-bold uppercase tracking-wider">
+                        <i class="fa-solid fa-bolt"></i> Atendimento Rápido, Limpo e Pontual
+                    </div>
+                    <button type="button"
+                            @click="copiarLinkDireto('marido-de-aluguel', 'Marido de Aluguel')"
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white text-xs font-bold transition cursor-pointer">
+                        <i class="fa-solid fa-link text-primary"></i>
+                        <span>Copiar Link Direto</span>
+                    </button>
+                </div>
+
+                <!-- Título Gigante Obrigatório -->
+                <h1 class="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-tight uppercase">
+                    Manutenção, Reparos <br class="hidden sm:inline">
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-yellow-300 to-primary">e Instalações</span>
+                </h1>
+
+                <p class="mt-6 max-w-2xl mx-auto text-base sm:text-xl text-stone-300 font-normal leading-relaxed">
+                    De pequenos consertos elétricos e hidráulicos à montagem de móveis, fechaduras e pintura.
+                    Selecione os serviços na nossa caixa de ferramentas e gere seu Ticket de Orçamento direto no WhatsApp!
+                </p>
+
+                <!-- Ações Principais -->
+                <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <a href="#servicos"
+                       class="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-primary hover:bg-primaryDark active:scale-95 text-secondary font-extrabold text-lg px-8 py-4 rounded-xl shadow-xl transition-all">
+                        <i class="fa-solid fa-toolbox"></i>
+                        <span>Abrir Caixa de Ferramentas</span>
+                    </a>
+                    <a href="#formulario"
+                       class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-stone-800/90 hover:bg-stone-700 text-white font-bold text-lg px-7 py-4 rounded-xl border border-stone-600 transition-all">
+                        <i class="fa-solid fa-clipboard-list text-primary"></i>
+                        <span>Ver Prancheta de Orçamento</span>
+                    </a>
+                </div>
+
+                <!-- Destaques Rápidos -->
+                <div class="mt-14 grid grid-cols-2 md:grid-cols-4 gap-4 text-left border-t border-stone-800/80 pt-8">
+                    <div class="flex items-center gap-3 text-stone-300">
+                        <div class="w-10 h-10 rounded-lg bg-stone-800 flex items-center justify-center text-primary shrink-0">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-stone-400 uppercase font-semibold">Agilidade</p>
+                            <p class="text-sm font-bold text-white">Atendimento Rápido</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 text-stone-300">
+                        <div class="w-10 h-10 rounded-lg bg-stone-800 flex items-center justify-center text-primary shrink-0">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-stone-400 uppercase font-semibold">Garantia</p>
+                            <p class="text-sm font-bold text-white">Serviço Garantido</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 text-stone-300">
+                        <div class="w-10 h-10 rounded-lg bg-stone-800 flex items-center justify-center text-primary shrink-0">
+                            <i class="fa-solid fa-hand-holding-dollar"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-stone-400 uppercase font-semibold">Economia</p>
+                            <p class="text-sm font-bold text-white">Preço Justo</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 text-stone-300">
+                        <div class="w-10 h-10 rounded-lg bg-stone-800 flex items-center justify-center text-primary shrink-0">
+                            <i class="fa-solid fa-broom"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-stone-400 uppercase font-semibold">Cuidado</p>
+                            <p class="text-sm font-bold text-white">Local Limpo & Seguro</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAIXA DE TRANSIÇÃO -->
+        <div class="warning-stripe h-1.5 w-full"></div>
+
+        <!-- 4.3. COMO FUNCIONA (3 Passos em Cards Brancos Simples) -->
+        <section id="como-funciona" class="py-16 bg-stone-200 border-b border-stone-300">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-2xl mx-auto mb-12">
+                    <span class="text-primaryDark font-extrabold tracking-widest text-xs uppercase bg-primary/20 px-3 py-1 rounded-full border border-primary/40">
+                        Processo Simples em 3 Etapas
+                    </span>
+                    <h2 class="text-3xl sm:text-4xl font-black text-secondary tracking-tight mt-3 uppercase">
+                        Como Funciona
+                    </h2>
+                    <p class="text-stone-600 mt-2 text-base">
+                        Solicitar seu conserto ou instalação nunca foi tão simples. Resolva em apenas 3 etapas:
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Passo 1 -->
+                    <div class="bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition border border-stone-300/80 relative flex flex-col items-start">
+                        <span class="text-4xl font-black text-primary/40 absolute top-6 right-6 select-none">01</span>
+                        <div class="w-14 h-14 rounded-xl bg-amber-50 border border-primary/30 text-primaryDark flex items-center justify-center text-2xl mb-6 shadow-sm">
+                            <i class="fa-solid fa-hand-pointer"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-secondary mb-3">1. Escolha a Categoria / Serviço</h3>
+                        <p class="text-stone-600 text-sm leading-relaxed">
+                            Navegue pelas categorias de reparo na Caixa de Ferramentas e marque todos os consertos ou instalações que você precisa.
+                        </p>
+                    </div>
+
+                    <!-- Passo 2 -->
+                    <div class="bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition border border-stone-300/80 relative flex flex-col items-start">
+                        <span class="text-4xl font-black text-primary/40 absolute top-6 right-6 select-none">02</span>
+                        <div class="w-14 h-14 rounded-xl bg-amber-50 border border-primary/30 text-primaryDark flex items-center justify-center text-2xl mb-6 shadow-sm">
+                            <i class="fa-solid fa-clipboard-check"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-secondary mb-3">2. Detalhes & Imóvel</h3>
+                        <p class="text-stone-600 text-sm leading-relaxed">
+                            Informe o tipo de imóvel (Casa, Apartamento ou Comercial), seu nome e localização na prancheta de solicitação.
+                        </p>
+                    </div>
+
+                    <!-- Passo 3 -->
+                    <div class="bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition border border-stone-300/80 relative flex flex-col items-start">
+                        <span class="text-4xl font-black text-primary/40 absolute top-6 right-6 select-none">03</span>
+                        <div class="w-14 h-14 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-600 flex items-center justify-center text-2xl mb-6 shadow-sm">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-secondary mb-3">3. Ticket Digital no WhatsApp</h3>
+                        <p class="text-stone-600 text-sm leading-relaxed">
+                            Gere seu Ticket Digital (#TCK) e envie os detalhes estruturados diretamente para o nosso WhatsApp com atendimento prioritário.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4.4. ETAPA 1: CAIXA DE FERRAMENTAS & CATEGORIAS DE REPARO -->
+        <section id="servicos" class="py-20 bg-stone-100 border-b border-stone-300">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+                <div class="text-center max-w-3xl mx-auto mb-10">
+                    <div class="inline-flex items-center gap-2 bg-stone-800 text-primary px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-3">
+                        <i class="fa-solid fa-toolbox"></i> Etapa 1 • Categoria de Reparo & Catálogo
+                    </div>
+                    <h2 class="text-3xl sm:text-4xl font-black text-secondary uppercase tracking-tight">
+                        Caixa de Ferramentas
+                    </h2>
+                    <p class="text-stone-600 mt-2 text-base">
+                        Filtre por categoria ou clique sobre os cards para selecionar o que você precisa consertar, instalar ou reparar.
+                    </p>
+                </div>
+
+                <!-- Botões de Filtro de Categoria -->
+                <div class="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 mb-10">
+                    <template x-for="cat in categorias" :key="cat.id">
+                        <button type="button"
+                                @click="filtroAtual = cat.id"
+                                :class="filtroAtual === cat.id
+                                    ? 'bg-primary text-secondary font-extrabold shadow-md ring-2 ring-primaryDark'
+                                    : 'bg-white text-stone-700 hover:bg-stone-200 border border-stone-300 font-semibold'"
+                                class="px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm flex items-center gap-2 transition-all cursor-pointer">
+                            <i :class="'fa-solid ' + cat.icone"></i>
+                            <span x-text="cat.nome"></span>
+                        </button>
+                    </template>
+                </div>
+
+                <!-- Grid de Cards de Serviços -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+                    <template x-for="servico in servicosFiltrados()" :key="servico.id">
+                        <div @click="toggleServico(servico)"
+                             :class="isSelected(servico) ? 'selected-card' : 'bg-white border border-stone-200 shadow-sm hover:border-amber-300'"
+                             class="service-card relative rounded-2xl p-6 flex flex-col justify-between h-full group">
+
+                            <!-- Ícone de Check no Canto Superior Direito se Selecionado -->
+                            <div x-show="isSelected(servico)"
+                                 x-transition
+                                 class="absolute top-4 right-4 w-7 h-7 rounded-full bg-primary text-secondary flex items-center justify-center font-bold text-sm shadow-md">
+                                <i class="fas fa-check"></i>
+                            </div>
+
+                            <div>
+                                <!-- Ícone do Serviço -->
+                                <div :class="isSelected(servico) ? 'bg-primary text-secondary' : 'bg-stone-100 text-stone-700 group-hover:bg-amber-100 group-hover:text-primaryDark'"
+                                     class="w-12 h-12 rounded-xl flex items-center justify-center text-xl mb-4 transition-colors">
+                                    <i :class="'fa-solid ' + servico.icone"></i>
+                                </div>
+
+                                <!-- Badge da Categoria -->
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-stone-400 block mb-1"
+                                      x-text="obterNomeCategoria(servico.categoria_id)"></span>
+
+                                <!-- Nome do Serviço -->
+                                <h3 class="text-base sm:text-lg font-bold text-secondary leading-snug" x-text="servico.nome"></h3>
+
+                                <!-- Descrição Curta -->
+                                <p class="text-xs text-stone-500 mt-2 leading-relaxed" x-text="servico.descricao"></p>
+                            </div>
+
+                            <!-- Rodapé do Card com Status -->
+                            <div class="mt-6 pt-3 border-t border-stone-200/70 flex items-center justify-between text-xs font-semibold">
+                                <span :class="isSelected(servico) ? 'text-primaryDark font-bold' : 'text-stone-400'"
+                                      x-text="isSelected(servico) ? 'Selecionado' : 'Toque para selecionar'">
+                                </span>
+                                <i :class="isSelected(servico) ? 'fa-solid fa-circle-check text-primary' : 'fa-regular fa-circle text-stone-300'"></i>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- Textarea Isolada para "Outros Serviços / Detalhes do Reparo" -->
+                <div class="mt-12 bg-white border border-stone-300 rounded-2xl p-6 sm:p-8 shadow-sm max-w-4xl mx-auto">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-primary/20 border border-primary/40 text-primaryDark flex items-center justify-center text-xl shrink-0 hidden sm:flex">
+                            <i class="fa-solid fa-pen-ruler"></i>
+                        </div>
+                        <div class="w-full">
+                            <div class="flex items-center justify-between flex-wrap gap-2 mb-2">
+                                <label for="outros-servicos" class="text-lg font-bold text-secondary flex items-center gap-2">
+                                    <i class="fa-solid fa-pen-ruler sm:hidden text-primaryDark"></i>
+                                    Descreva os Detalhes ou Outros Reparos
+                                </label>
+                                <span class="text-xs font-semibold text-stone-500 bg-stone-100 px-2.5 py-1 rounded-full">
+                                    Campo Descritivo
+                                </span>
+                            </div>
+                            <p class="text-xs sm:text-sm text-stone-500 mb-4">
+                                Conte rapidamente o que precisa ser feito (quantidade de itens, alturas, marcas ou reparos diversos):
+                            </p>
+                            <textarea id="outros-servicos"
+                                      x-model="outrosServicos"
+                                      rows="3"
+                                      placeholder="Ex: Instalar suporte de TV 65 polegadas na sala, trocar resistência do chuveiro e ajustar porta do armário..."
+                                      class="w-full rounded-xl border border-stone-300 p-3.5 text-stone-800 text-sm focus:border-primary focus:ring-2 focus:ring-primary/40 focus:outline-none transition"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Resumo Rápido da Seleção Atual -->
+                    <div class="mt-4 pt-4 border-t border-stone-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm">
+                        <div class="text-stone-600">
+                            <span class="font-bold text-secondary" x-text="servicosSelecionados.length"></span> serviço(s) selecionado(s) na caixa de ferramentas.
+                        </div>
+                        <a href="#formulario" class="inline-flex items-center gap-2 bg-primary hover:bg-primaryDark text-secondary px-5 py-2.5 rounded-xl font-extrabold transition">
+                            <span>Avançar para a Prancheta</span>
+                            <i class="fa-solid fa-arrow-down"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 4.5. ETAPA 2 & 3: A PRANCHETA + TICKET DIGITAL DE MARIDO DE ALUGUEL -->
+        <section id="formulario" class="py-20 blueprint-bg relative" style="--notch-bg: #18181b;">
+            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+
+                <div class="text-center mb-12">
+                    <span class="text-primary font-bold text-xs uppercase tracking-widest bg-stone-900/80 px-3 py-1.5 rounded-full border border-primary/30">
+                        Etapa 2 & 3 • Dados do Imóvel & Ticket Digital
+                    </span>
+                    <h2 class="text-3xl sm:text-4xl font-black text-white tracking-tight mt-3 uppercase">
+                        Prancheta de Solicitação
+                    </h2>
+                    <p class="text-stone-400 mt-2 text-sm sm:text-base">
+                        Revise seus itens, selecione o tipo de imóvel e gere seu Ticket Digital para o WhatsApp.
+                    </p>
+                </div>
+
+                <!-- Formulário Envolto pela Classe .clipboard com .clipboard-clip no Topo -->
+                <div class="clipboard px-6 sm:px-12 pb-10">
+
+                    <!-- Clipe Metálico Superior -->
+                    <div class="clipboard-clip" aria-hidden="true"></div>
+
+                    <!-- Cabeçalho da Ordem de Serviço na Prancheta -->
+                    <div class="text-center border-b border-stone-300 pb-5 mb-8">
+                        <h3 class="text-xl sm:text-2xl font-black text-stone-800 tracking-tight uppercase flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-clipboard-list text-primaryDark"></i>
+                            Ordem de Pré-Orçamento
+                        </h3>
+                        <p class="text-xs text-stone-500 font-medium mt-1">Preencha os campos abaixo para emitir seu Ticket Digital</p>
+                    </div>
+
+                    <!-- Lista de Serviços Selecionados no Topo do Formulário -->
+                    <div class="mb-6 bg-stone-100 rounded-xl p-4 sm:p-5 border border-stone-200">
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="text-sm font-bold text-stone-700 uppercase tracking-wide flex items-center gap-2">
+                                <i class="fa-solid fa-check-double text-primaryDark"></i>
+                                Itens Selecionados (<span x-text="servicosSelecionados.length"></span>)
+                            </h4>
+                            <button type="button"
+                                    x-show="servicosSelecionados.length > 0"
+                                    @click="servicosSelecionados = []"
+                                    class="text-xs text-red-600 hover:text-red-800 font-semibold hover:underline cursor-pointer">
+                                Limpar Seleção
+                            </button>
+                        </div>
+
+                        <div x-show="servicosSelecionados.length === 0" class="text-center py-3 text-stone-500 text-sm">
+                            <i class="fa-solid fa-circle-exclamation text-amber-500 mr-1"></i>
+                            Nenhum card marcado acima.
+                            <a href="#servicos" class="text-primaryDark font-bold hover:underline ml-1">Escolher na Caixa de Ferramentas</a>
+                            <span class="block text-xs text-stone-400 mt-1" x-show="outrosServicos.trim()">
+                                (Você preencheu o campo descritivo com os detalhes do serviço!)
+                            </span>
+                        </div>
+
+                        <div class="space-y-2 max-h-56 overflow-y-auto pr-1" x-show="servicosSelecionados.length > 0">
+                            <template x-for="item in servicosSelecionados" :key="item.id">
+                                <div class="flex items-center justify-between bg-white px-3.5 py-2.5 rounded-lg border border-stone-200 shadow-sm">
+                                    <div class="flex items-center gap-2.5 truncate">
+                                        <i :class="'fa-solid ' + item.icone + ' text-primaryDark text-sm'"></i>
+                                        <span class="text-sm font-semibold text-stone-800 truncate" x-text="item.nome"></span>
+                                    </div>
+                                    <button type="button"
+                                            @click="removerServico(item.id)"
+                                            title="Remover serviço"
+                                            class="text-stone-400 hover:text-red-600 transition-colors p-1 ml-2 cursor-pointer">
+                                        <i class="fa-solid fa-trash-can text-sm"></i>
+                                    </button>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Seleção Tátil de Tipo de Imóvel (Casa, Apartamento, Comercial) -->
+                    <div class="mb-6">
+                        <label class="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">
+                            Tipo de Imóvel *
+                        </label>
+                        <div class="grid grid-cols-3 gap-3">
+                            <template x-for="imv in [
+                                { nome: 'Casa', icone: 'fa-house' },
+                                { nome: 'Apartamento', icone: 'fa-building' },
+                                { nome: 'Comercial', icone: 'fa-store' }
+                            ]" :key="imv.nome">
+                                <button type="button"
+                                        @click="cliente.tipoImovel = imv.nome"
+                                        :class="cliente.tipoImovel === imv.nome ? 'selected-card text-secondary' : 'bg-white border-stone-300 text-stone-600 hover:bg-stone-100'"
+                                        class="service-card border-2 rounded-xl py-3 px-2 text-center cursor-pointer">
+                                    <i :class="'fa-solid ' + imv.icone" class="text-lg text-primaryDark mb-1 block"></i>
+                                    <span class="text-xs sm:text-sm font-extrabold block" x-text="imv.nome"></span>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Formulário na Prancheta -->
+                    <form @submit.prevent="gerarEEnviarTicketMarido()" class="space-y-6">
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <!-- Campo: Nome -->
+                            <div class="relative">
+                                <label class="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-1">
+                                    Nome do Cliente *
+                                </label>
+                                <input type="text"
+                                       x-model="cliente.nome"
+                                       placeholder="Ex: João da Silva"
+                                       required
+                                       class="w-full bg-transparent border-b-2 border-stone-300 focus:border-primary focus:outline-none py-2 px-1 text-stone-800 placeholder-stone-400 font-medium transition-colors">
+                            </div>
+
+                            <!-- Campo: Telefone -->
+                            <div class="relative">
+                                <label class="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-1">
+                                    Telefone / WhatsApp do Cliente *
+                                </label>
+                                <input type="tel"
+                                       x-model="cliente.telefone"
+                                       @input="mascararTelefone($event)"
+                                       maxlength="15"
+                                       required
+                                       placeholder="(47) 99999-9999"
+                                       class="w-full bg-transparent border-b-2 border-stone-300 focus:border-primary focus:outline-none py-2 px-1 text-stone-800 placeholder-stone-400 font-medium transition-colors">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <!-- Campo: Bairro / Cidade -->
+                            <div class="relative">
+                                <label class="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-1">
+                                    Bairro / Cidade *
+                                </label>
+                                <input type="text"
+                                       x-model="cliente.bairro"
+                                       required
+                                       placeholder="Ex: Centro - Balneário Camboriú"
+                                       class="w-full bg-transparent border-b-2 border-stone-300 focus:border-primary focus:outline-none py-2 px-1 text-stone-800 placeholder-stone-400 font-medium transition-colors">
+                            </div>
+
+                            <!-- Campo: Rua / Número / Complemento -->
+                            <div class="relative">
+                                <label class="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-1">
+                                    Rua / Nº / Complemento (Opcional)
+                                </label>
+                                <input type="text"
+                                       x-model="cliente.rua"
+                                       placeholder="Ex: Av. Brasil, 1500 - Apto 42"
+                                       class="w-full bg-transparent border-b-2 border-stone-300 focus:border-primary focus:outline-none py-2 px-1 text-stone-800 placeholder-stone-400 font-medium transition-colors">
+                            </div>
+                        </div>
+
+                        <!-- Botões: Gerar Ticket Digital / Enviar Direto -->
+                        <div class="pt-4 space-y-3">
+                            <button type="submit"
+                                    :disabled="servicosSelecionados.length === 0 && !outrosServicos.trim()"
+                                    :class="(servicosSelecionados.length === 0 && !outrosServicos.trim())
+                                        ? 'opacity-50 cursor-not-allowed bg-stone-400'
+                                        : 'bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 hover:scale-[1.01] shadow-xl cursor-pointer'"
+                                    class="w-full text-white font-extrabold text-base sm:text-lg py-4 px-6 rounded-xl transition-all flex items-center justify-center gap-3">
+                                <i class="fa-brands fa-whatsapp text-2xl"></i>
+                                <span>Gerar Ticket & Enviar para Orçamento no WhatsApp</span>
+                            </button>
+
+                            <button type="button"
+                                    :disabled="servicosSelecionados.length === 0 && !outrosServicos.trim()"
+                                    @click="gerarTicketMaridoPreview()"
+                                    :class="(servicosSelecionados.length === 0 && !outrosServicos.trim())
+                                        ? 'opacity-40 cursor-not-allowed'
+                                        : 'hover:bg-stone-200 cursor-pointer'"
+                                    class="w-full py-3 px-4 rounded-xl border border-stone-300 text-stone-700 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition">
+                                <i class="fa-solid fa-ticket text-primaryDark"></i>
+                                <span>Visualizar Comprovante do Ticket Digital (#TCK)</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- CARD DO TICKET DIGITAL DE MARIDO DE ALUGUEL (ETAPA 3) -->
+                <div id="ticket-marido-card" x-show="maridoTicket.visivel" x-transition class="mt-10">
+                    <div class="ticket-card max-w-lg mx-auto p-6 sm:p-8 text-slate-800">
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <span class="text-[10px] font-black uppercase tracking-widest text-amber-600 block">PIF PAF CONNECT • MARIDO DE ALUGUEL</span>
+                                <h3 class="text-2xl font-black font-mono text-slate-900 tracking-tight" x-text="maridoTicket.id"></h3>
+                                <p class="text-xs text-slate-500 font-medium mt-0.5" x-text="'Emitido em ' + maridoTicket.dataHora"></p>
+                            </div>
+                            <span class="bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-black uppercase px-2.5 py-1 rounded-lg flex items-center gap-1 shrink-0">
+                                <i class="fa-solid fa-star text-amber-500"></i> Prioritário
+                            </span>
+                        </div>
+
+                        <div class="ticket-divider"></div>
+
+                        <div class="space-y-3 text-xs sm:text-sm">
+                            <div class="flex justify-between gap-2 py-1 border-b border-slate-100">
+                                <span class="text-slate-500 font-medium">Cliente:</span>
+                                <span class="font-extrabold text-slate-900 text-right" x-text="cliente.nome || 'Não informado'"></span>
+                            </div>
+                            <div class="flex justify-between gap-2 py-1 border-b border-slate-100">
+                                <span class="text-slate-500 font-medium">WhatsApp / Telefone:</span>
+                                <span class="font-extrabold text-amber-700 text-right" x-text="cliente.telefone || 'Não informado'"></span>
+                            </div>
+                            <div class="flex justify-between gap-2 py-1 border-b border-slate-100">
+                                <span class="text-slate-500 font-medium">Tipo de Imóvel:</span>
+                                <span class="font-bold text-slate-800 text-right" x-text="cliente.tipoImovel"></span>
+                            </div>
+                            <div class="flex justify-between gap-2 py-1 border-b border-slate-100">
+                                <span class="text-slate-500 font-medium">Localização:</span>
+                                <span class="font-bold text-slate-800 text-right" x-text="(cliente.bairro || 'Não informado') + (cliente.rua ? ' • ' + cliente.rua : '')"></span>
+                            </div>
+
+                            <div class="py-1">
+                                <span class="text-slate-500 font-medium block mb-1.5">Reparos / Instalações Selecionados:</span>
+                                <div class="flex flex-wrap gap-1.5" x-show="servicosSelecionados.length > 0">
+                                    <template x-for="s in servicosSelecionados" :key="s.id">
+                                        <span class="bg-amber-50 border border-amber-200 text-amber-900 font-bold text-xs px-2.5 py-1 rounded-lg" x-text="s.nome"></span>
+                                    </template>
+                                </div>
+                                <p x-show="outrosServicos.trim()" class="mt-2 bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs text-slate-700" x-text="outrosServicos"></p>
+                            </div>
+                        </div>
+
+                        <div class="ticket-divider"></div>
+
+                        <div class="text-center">
+                            <div class="barcode-bars opacity-85"></div>
+                            <span class="text-[10px] font-mono tracking-[0.25em] text-slate-400 block mt-1.5" x-text="maridoTicket.id + '-REPAROS-2026'"></span>
+                        </div>
+                    </div>
+
+                    <div class="max-w-lg mx-auto mt-4 flex flex-col sm:flex-row gap-2.5">
+                        <button type="button"
+                                @click="enviarOrcamentoMaridoWhatsApp()"
+                                class="flex-1 py-4 px-5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm sm:text-base shadow-xl flex items-center justify-center gap-2 cursor-pointer">
+                            <i class="fa-brands fa-whatsapp text-xl"></i>
+                            <span>Enviar Ticket para Orçamento no WhatsApp</span>
+                        </button>
+                        <button type="button"
+                                @click="copiarResumoTicketMarido()"
+                                class="py-4 px-5 rounded-2xl bg-stone-800 hover:bg-stone-700 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 border border-stone-700 cursor-pointer">
+                            <i class="fa-regular fa-copy text-primary"></i>
+                            <span>Copiar Resumo</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- FAIXA DECORATIVA INFERIOR -->
+        <div class="warning-stripe h-2.5 w-full"></div>
+    </main>
+
+    <!-- =================================================================== -->
+    <!-- RODAPÉ UNIFICADO                                                    -->
+    <!-- =================================================================== -->
+    <footer class="bg-slate-950 text-slate-400 py-10 border-t border-slate-800 text-xs sm:text-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center gap-2.5 mb-3">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-sky-500 to-amber-500 text-slate-950 flex items-center justify-center font-black">
+                            <i class="fa-solid fa-bolt"></i>
+                        </div>
+                        <span class="text-lg font-black text-white uppercase">Pif Paf <span class="text-sky-400">Connect</span></span>
+                    </div>
+                    <p class="text-slate-400 text-xs leading-relaxed">
+                        Central de Serviços & Indicações: Climatização, Ar-Condicionado e Marido de Aluguel Profissional. Ferramental completo e atendimento prioritário via Ticket Digital.
+                    </p>
+                </div>
+
+                <div>
+                    <h5 class="text-white font-bold uppercase tracking-wider text-xs mb-3">Links Diretos</h5>
+                    <ul class="space-y-2 text-xs">
+                        <li>
+                            <a href="#/" @click.prevent="navegarPara('hub')" class="hover:text-white transition flex items-center gap-2">
+                                <i class="fa-solid fa-table-cells-large text-emerald-400"></i> Hub Central de Serviços
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#ar-condicionado" @click.prevent="navegarPara('ar-condicionado')" class="hover:text-sky-400 transition flex items-center gap-2">
+                                <i class="fa-solid fa-snowflake text-sky-400"></i> Ar-Condicionado & Climatização
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#marido-de-aluguel" @click.prevent="navegarPara('marido-de-aluguel')" class="hover:text-primary transition flex items-center gap-2">
+                                <i class="fa-solid fa-hammer text-primary"></i> Marido de Aluguel & Reparos
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h5 class="text-white font-bold uppercase tracking-wider text-xs mb-3">Central de Atendimento</h5>
+                    <p class="text-xs text-slate-400 mb-2">Fale diretamente com a central pelo WhatsApp:</p>
+                    <button type="button"
+                            @click="abrirWhatsAppDireto('Olá! Vim pelo site Pif Paf Connect e gostaria de solicitar um orçamento.')"
+                            class="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 font-extrabold text-base cursor-pointer">
+                        <i class="fa-brands fa-whatsapp text-xl"></i>
+                        <span x-text="formatarTelefoneExibicao(config.whatsappLala)"></span>
+                    </button>
+                    <p class="text-[11px] text-slate-500 mt-2">
+                        Segunda a Sábado • Atendimento Prioritário com Ticket Digital
+                    </p>
+                </div>
+            </div>
+
+            <div class="border-t border-slate-800/80 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+                <p>&copy; 2026 Pif Paf Connect - Central de Serviços & Indicações. Todos os direitos reservados.</p>
+                <button type="button" @click="modalPwaAberto = true" class="text-sky-400 hover:underline font-semibold flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-mobile-screen-button"></i> Instalar como App no celular
+                </button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- BOTÃO FLUTUANTE DE WHATSAPP -->
+    <button type="button"
+            @click="abrirWhatsAppDireto(rotaAtual === 'ar-condicionado' ? 'Olá! Gostaria de um orçamento de Ar-Condicionado e Climatização.' : 'Olá! Gostaria de agendar um serviço de Marido de Aluguel.')"
+            class="fixed bottom-6 right-6 z-40 bg-emerald-600 hover:bg-emerald-500 text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-3xl hover:scale-110 transition-transform cursor-pointer"
+            title="Falar no WhatsApp">
+        <i class="fa-brands fa-whatsapp"></i>
+    </button>
+
+    <!-- =================================================================== -->
+    <!-- MODAL 1: TUTORIAL "VIRAR APP" (PWA)                                 -->
+    <!-- =================================================================== -->
+    <div x-show="modalPwaAberto"
+         x-transition.opacity
+         class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto"
+         @click.self="modalPwaAberto = false">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative">
+            <button type="button"
+                    @click="modalPwaAberto = false"
+                    class="absolute top-5 right-5 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center cursor-pointer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="w-12 h-12 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center text-2xl mb-4">
+                <i class="fa-solid fa-mobile-screen-button"></i>
+            </div>
+
+            <h3 class="text-xl font-black text-slate-900">Transformar em Aplicativo</h3>
+            <p class="text-xs sm:text-sm text-slate-500 mt-1">
+                Fixe o <strong>Pif Paf Connect</strong> na tela inicial do seu celular para abrir em tela cheia com 1 toque:
+            </p>
+
+            <!-- Botão nativo caso o navegador suporte beforeinstallprompt -->
+            <div x-show="deferredPrompt" class="mt-4">
+                <button type="button"
+                        @click="instalarPwaNativo()"
+                        class="w-full py-3.5 px-4 rounded-2xl bg-sky-600 hover:bg-sky-500 text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg cursor-pointer">
+                    <i class="fa-solid fa-download"></i>
+                    <span>Instalar Aplicativo Agora</span>
+                </button>
+            </div>
+
+            <div class="mt-5 space-y-4">
+                <!-- Instruções iPhone / iOS -->
+                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+                    <div class="flex items-center gap-2 font-extrabold text-slate-900 text-sm mb-2">
+                        <i class="fa-brands fa-apple text-lg"></i>
+                        <span>No iPhone (Safari)</span>
+                    </div>
+                    <ol class="text-xs text-slate-600 space-y-1.5 list-decimal list-inside">
+                        <li>Toque no ícone de <strong>Compartilhar</strong> <i class="fa-solid fa-arrow-up-from-bracket text-sky-600 mx-0.5"></i> na barra inferior.</li>
+                        <li>Role a lista e toque em <strong>"Adicionar à Tela de Início"</strong> <i class="fa-regular fa-square-plus text-slate-700 mx-0.5"></i>.</li>
+                        <li>Confirme tocando em <strong>Adicionar</strong> no canto superior direito.</li>
+                    </ol>
+                </div>
+
+                <!-- Instruções Android / Chrome -->
+                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+                    <div class="flex items-center gap-2 font-extrabold text-slate-900 text-sm mb-2">
+                        <i class="fa-brands fa-android text-lg text-emerald-600"></i>
+                        <span>No Android (Chrome)</span>
+                    </div>
+                    <ol class="text-xs text-slate-600 space-y-1.5 list-decimal list-inside">
+                        <li>Toque nos <strong>3 pontinhos</strong> <i class="fa-solid fa-ellipsis-vertical text-slate-700 mx-0.5"></i> no canto superior direito.</li>
+                        <li>Selecione <strong>"Instalar aplicativo"</strong> ou <strong>"Adicionar à tela inicial"</strong>.</li>
+                        <li>Confirme em <strong>Instalar</strong> e o ícone aparecerá junto aos seus apps!</li>
+                    </ol>
+                </div>
+            </div>
+
+            <button type="button"
+                    @click="modalPwaAberto = false"
+                    class="mt-6 w-full py-3 rounded-xl bg-slate-900 text-white font-bold text-sm hover:bg-slate-800 transition cursor-pointer">
+                Entendi, fechar
+            </button>
+        </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- MODAL 2: CONFIGURAÇÕES RÁPIDAS (ÍCONE DE ENGRENAGEM)                -->
+    <!-- =================================================================== -->
+    <div x-show="modalConfigAberto"
+         x-transition.opacity
+         class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto"
+         @click.self="modalConfigAberto = false">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative">
+            <button type="button"
+                    @click="modalConfigAberto = false"
+                    class="absolute top-5 right-5 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center cursor-pointer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="flex items-center gap-3 mb-5">
+                <div class="w-11 h-11 rounded-2xl bg-slate-900 text-amber-400 flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-sliders"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-black text-slate-900">Configurações Rápidas</h3>
+                    <p class="text-xs text-slate-500">Contatos de destino e Webhook silencioso</p>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-600 mb-1">
+                        WhatsApp de Atendimento Direto (Lalá)
+                    </label>
+                    <input type="text"
+                           x-model="configForm.whatsappLala"
+                           placeholder="5547999582239"
+                           class="w-full rounded-xl border-2 border-slate-200 focus:border-sky-500 focus:outline-none px-3.5 py-2.5 text-sm font-mono font-bold text-slate-900">
+                    <p class="text-[11px] text-slate-400 mt-1">Número oficial para onde o cliente é direcionado ao clicar no botão verde.</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-600 mb-1">
+                        Seu WhatsApp (Cópia Silenciosa de Controle)
+                    </label>
+                    <input type="text"
+                           x-model="configForm.whatsappAdmin"
+                           placeholder="5547999158919"
+                           class="w-full rounded-xl border-2 border-slate-200 focus:border-sky-500 focus:outline-none px-3.5 py-2.5 text-sm font-mono font-bold text-slate-900">
+                    <p class="text-[11px] text-slate-400 mt-1">Recebe o alerta silencioso em segundo plano via API/Webhook sem abrir janelas extras.</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-600 mb-1">
+                        Endpoint de Webhook / API Silenciosa
+                    </label>
+                    <input type="text"
+                           x-model="configForm.webhookUrl"
+                           placeholder="/api/notify"
+                           class="w-full rounded-xl border-2 border-slate-200 focus:border-sky-500 focus:outline-none px-3.5 py-2.5 text-sm font-mono text-slate-800">
+                    <p class="text-[11px] text-slate-400 mt-1">Padrão: <code class="text-slate-600">/api/notify</code> (ou cole uma URL externa do n8n/Make/Evolution).</p>
+                </div>
+            </div>
+
+            <div class="mt-6 flex items-center justify-between gap-2 pt-4 border-t border-slate-100">
+                <button type="button"
+                        @click="restaurarConfigPadrao()"
+                        class="text-xs font-bold text-slate-500 hover:text-slate-800 px-3 py-2 rounded-lg cursor-pointer">
+                    Restaurar Padrão
+                </button>
+                <div class="flex items-center gap-2">
+                    <button type="button"
+                            @click="modalConfigAberto = false"
+                            class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer">
+                        Cancelar
+                    </button>
+                    <button type="button"
+                            @click="salvarConfig()"
+                            class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs cursor-pointer">
+                        Salvar Configurações
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- LÓGICA DA APLICAÇÃO (ALPINE.JS + ROTEAMENTO HASH + DISPARO SEGURO)  -->
+    <!-- =================================================================== -->
+    <script>
+        // Catálogo Extensível de Serviços do Hub Central (pronto para plugar novas especialidades)
+        const SERVICES_CATALOG = [
+            {
+                slug: 'ar-condicionado',
+                titulo: 'Ar-Condicionado & Climatização',
+                badge: 'Climatização • 4 Etapas',
+                icone: 'fa-solid fa-snowflake',
+                tema: 'sky',
+                ativo: true,
+                descricao: 'Instalação nova, compra + instalação com calculadora de BTUs em tempo real, higienização, recarga de gás e manutenção de aparelhos Split, Inverter e Multi-Split.',
+                tags: ['Calculadora de BTUs', 'Instalação & Limpeza', 'Inverter & Split', 'Ticket #TCK']
+            },
+            {
+                slug: 'marido-de-aluguel',
+                titulo: 'Marido de Aluguel & Reparos',
+                badge: 'Reparos & Instalações',
+                icone: 'fa-solid fa-hammer -rotate-45',
+                tema: 'amber',
+                ativo: true,
+                descricao: 'Caixa de ferramentas completa: elétrica básica (chuveiros, tomadas), hidráulica (torneiras, vazamentos), suportes de TV, cortinas, fechaduras, móveis e pintura.',
+                tags: ['Elétrica & Hidráulica', 'Suportes & Móveis', 'Fechaduras & Pintura', 'Ticket #TCK']
+            }
+        ];
+
+        function pifPafConnectApp() {
+            return {
+                // Roteamento por URL Hash: 'hub' | 'ar-condicionado' | 'marido-de-aluguel'
+                rotaAtual: 'hub',
+                catalogoServicos: SERVICES_CATALOG,
+
+                // Modais e PWA
+                modalPwaAberto: false,
+                modalConfigAberto: false,
+                deferredPrompt: null,
+                toast: {
+                    visivel: false,
+                    mensagem: '',
+                    icone: 'fa-solid fa-circle-check'
+                },
+
+                // Configurações de Contato & Disparo Silencioso
+                config: {
+                    whatsappLala: '5547999582239',   // Atendimento Direto (Lalá)
+                    whatsappAdmin: '5547999158919',  // Sua Cópia Silenciosa de Controle
+                    webhookUrl: '/api/notify'        // Endpoint silencioso de background
+                },
+                configForm: {
+                    whatsappLala: '5547999582239',
+                    whatsappAdmin: '5547999158919',
+                    webhookUrl: '/api/notify'
+                },
+
+                // =============================================================
+                // ESTADO DO SERVIÇO 1: AR-CONDICIONADO & CLIMATIZAÇÃO (4 ETAPAS)
+                // =============================================================
+                opcoesObjetivoAr: [
+                    { id: 'instalacao_nova', nome: 'Instalação Nova', descricao: 'Já tenho o aparelho e preciso instalar no imóvel', icone: 'fa-screwdriver-wrench' },
+                    { id: 'comprar_instalar', nome: 'Comprar + Instalar', descricao: 'Quero ajuda para dimensionar os BTUs, escolher e instalar', icone: 'fa-cart-plus' },
+                    { id: 'troca_substituicao', nome: 'Troca / Substituição', descricao: 'Retirar um aparelho antigo e instalar um novo no local', icone: 'fa-arrows-rotate' },
+                    { id: 'limpeza_higienizacao', nome: 'Limpeza & Higienização', descricao: 'Higienização profunda, eliminação de fungos, odores e filtros', icone: 'fa-spray-can-sparkles' },
+                    { id: 'conserto_manutencao', nome: 'Conserto / Manutenção', descricao: 'Aparelho não gela, pingando água, barulho ou recarga de gás', icone: 'fa-wrench' },
+                    { id: 'ampliacao_multisplit', nome: 'Ampliação / Multi-Split', descricao: 'Climatizar múltiplos ambientes ou projeto de infraestrutura', icone: 'fa-diagram-project' }
+                ],
+                opcoesAreaM2: [
+                    { id: 'ate_12', label: 'Até 12 m²', exemplo: 'Quarto compacto / Escritório' },
+                    { id: '13_20', label: '13 a 20 m²', exemplo: 'Quarto casal / Sala média' },
+                    { id: '21_30', label: '21 a 30 m²', exemplo: 'Sala ampla / Loja' },
+                    { id: '30_mais', label: '30 m²+', exemplo: 'Salão / Área integrada' }
+                ],
+                ar: {
+                    etapa: 1,
+                    objetivo: 'Comprar + Instalar',
+                    areaM2: '13_20',
+                    incidenciaSol: 'Sol da Manhã / Sombra',
+                    tecnologia: 'Inverter (Mais Econômico)',
+                    tipoAparelho: 'Split',
+                    btusManual: '12.000 BTUs',
+                    quantidade: '1 aparelho',
+                    tipoImovel: 'Apartamento',
+                    tubulacao: 'Pronta na parede',
+                    clienteNome: '',
+                    clienteTelefone: '',
+                    clienteLocal: '',
+                    observacoes: '',
+                    ticketId: '#TCK-84920',
+                    dataHoraEmissao: ''
+                },
+
+                // =============================================================
+                // ESTADO DO SERVIÇO 2: MARIDO DE ALUGUEL & REPAROS
+                // =============================================================
+                filtroAtual: 'todos',
+                outrosServicos: '',
+                categorias: [
+                    { id: 'todos', nome: 'Todos', icone: 'fa-toolbox' },
+                    { id: 'instalacoes', nome: 'Instalações e Suportes', icone: 'fa-screwdriver-wrench' },
+                    { id: 'eletrica', nome: 'Elétrica Básica', icone: 'fa-bolt' },
+                    { id: 'hidraulica', nome: 'Hidráulica Residencial', icone: 'fa-faucet' },
+                    { id: 'portas_moveis', nome: 'Portas, Fechaduras & Móveis', icone: 'fa-door-open' },
+                    { id: 'pintura', nome: 'Pintura & Pequenos Reparos', icone: 'fa-paint-roller' }
+                ],
+                servicos: [
+                    // Elétrica Básica (4)
+                    { id: 1, nome: 'Instalação de Chuveiro Elétrico', descricao: 'Instalação completa, fiação reforçada e troca de resistência', icone: 'fa-shower', categoria_id: 'eletrica' },
+                    { id: 2, nome: 'Troca de Tomadas e Interruptores', descricao: 'Substituição de espelhos, novos módulos 10A/20A e reparos', icone: 'fa-plug', categoria_id: 'eletrica' },
+                    { id: 3, nome: 'Luminárias e Ventiladores de Teto', descricao: 'Fixação e ligação de lustres, plafons, spots LED e ventiladores', icone: 'fa-lightbulb', categoria_id: 'eletrica' },
+                    { id: 4, nome: 'Troca de Disjuntores e Quadro de Luz', descricao: 'Balanceamento de circuitos elétricos e troca de disjuntores DIN', icone: 'fa-bolt', categoria_id: 'eletrica' },
+
+                    // Hidráulica Residencial (4)
+                    { id: 5, nome: 'Troca de Torneiras e Misturadores', descricao: 'Instalação de torneiras de bancada, parede e troca de reparos', icone: 'fa-faucet', categoria_id: 'hidraulica' },
+                    { id: 6, nome: 'Desentupimento de Pias e Ralos', descricao: 'Desobstrução de sifões, ralos de banheiro e pias de cozinha', icone: 'fa-toilet', categoria_id: 'hidraulica' },
+                    { id: 7, nome: 'Reparo em Válvula e Caixa Acoplada', descricao: 'Regulagem de boia, substituição de obturador e kit completo', icone: 'fa-bath', categoria_id: 'hidraulica' },
+                    { id: 8, nome: 'Conserto de Vazamentos em Canos', descricao: 'Localização e vedação de vazamentos em canos PVC e conexões', icone: 'fa-wrench', categoria_id: 'hidraulica' },
+
+                    // Instalações e Suportes (4)
+                    { id: 9, nome: 'Fixação de Suporte de TV', descricao: 'Instalação nivelada em parede de alvenaria, painel ou drywall', icone: 'fa-tv', categoria_id: 'instalacoes' },
+                    { id: 10, nome: 'Instalação de Cortinas e Persianas', descricao: 'Fixação com buchas adequadas de trilhos, varões e persianas rolô', icone: 'fa-border-all', categoria_id: 'instalacoes' },
+                    { id: 11, nome: 'Montagem de Prateleiras, Quadros e Espelhos', descricao: 'Alinhamento preciso com nível a laser e fixação reforçada', icone: 'fa-layer-group', categoria_id: 'instalacoes' },
+                    { id: 17, nome: 'Acessórios de Banheiro e Cozinha', descricao: 'Instalação de porta-toalhas, saboneteiras, papeleiras e varais', icone: 'fa-Screwdriver fa-screwdriver', categoria_id: 'instalacoes' },
+
+                    // Portas, Fechaduras & Móveis (3)
+                    { id: 12, nome: 'Instalação de Fechaduras e Olho Mágico', descricao: 'Troca de fechaduras residenciais, travas e fechadura digital', icone: 'fa-lock', categoria_id: 'portas_moveis' },
+                    { id: 13, nome: 'Montagem e Reparo de Móveis', descricao: 'Montagem de móveis, regulagem de dobradiças e corrediças de gavetas', icone: 'fa-couch', categoria_id: 'portas_moveis' },
+                    { id: 18, nome: 'Ajuste de Portas e Dobradiças', descricao: 'Reparo de portas raspando, troca de maçanetas, trincos e batedores', icone: 'fa-door-closed', categoria_id: 'portas_moveis' },
+
+                    // Pintura & Pequenos Reparos Diversos (3)
+                    { id: 14, nome: 'Pintura de Paredes e Tetos', descricao: 'Pintura com tinta acrílica ou látex com acabamento profissional', icone: 'fa-paint-roller', categoria_id: 'pintura' },
+                    { id: 15, nome: 'Retoque de Gesso e Massa Corrida', descricao: 'Fechamento de furos de buchas antigas, trincas e imperfeições', icone: 'fa-trowel-bricks', categoria_id: 'pintura' },
+                    { id: 16, nome: 'Pintura de Portas e Reparos Diversos', descricao: 'Aplicação de verniz/esmalte, vedação com silicone e pequenos consertos', icone: 'fa-hammer', categoria_id: 'pintura' }
+                ],
+                servicosSelecionados: [],
+                cliente: {
+                    tipoImovel: 'Apartamento',
+                    nome: '',
+                    telefone: '',
+                    rua: '',
+                    numero: '',
+                    bairro: '',
+                    complemento: ''
+                },
+                maridoTicket: {
+                    visivel: false,
+                    id: '#TCK-00000',
+                    dataHora: ''
+                },
+
+                // =============================================================
+                // INICIALIZAÇÃO E ROTEAMENTO HASH (DEEP-LINKING)
+                // =============================================================
+                initApp() {
+                    // Carregar configurações salvas no localStorage (se existirem)
+                    try {
+                        const saved = localStorage.getItem('pifpaf_connect_config');
+                        if (saved) {
+                            const parsed = JSON.parse(saved);
+                            if (parsed.whatsappLala) this.config.whatsappLala = parsed.whatsappLala;
+                            if (parsed.whatsappAdmin) this.config.whatsappAdmin = parsed.whatsappAdmin;
+                            if (parsed.webhookUrl) this.config.webhookUrl = parsed.webhookUrl;
+                        }
+                    } catch (e) {}
+
+                    // Sincronizar rota inicial pelo URL Hash
+                    this.sincronizarHash();
+                    window.addEventListener('hashchange', () => this.sincronizarHash());
+
+                    // Capturar evento nativo de instalação PWA
+                    window.addEventListener('beforeinstallprompt', (e) => {
+                        e.preventDefault();
+                        this.deferredPrompt = e;
+                    });
+                },
+
+                sincronizarHash() {
+                    const rawHash = (window.location.hash || '').replace(/^#\/?/, '').trim().toLowerCase();
+                    if (rawHash === 'ar-condicionado' || rawHash === 'climatizacao' || rawHash === 'ar') {
+                        this.rotaAtual = 'ar-condicionado';
+                    } else if (rawHash === 'marido-de-aluguel' || rawHash === 'reparos' || rawHash === 'marido') {
+                        this.rotaAtual = 'marido-de-aluguel';
+                    } else if (['servicos', 'formulario', 'como-funciona'].includes(rawHash)) {
+                        this.rotaAtual = 'marido-de-aluguel';
+                    } else {
+                        this.rotaAtual = 'hub';
+                    }
+                    if (!['servicos', 'formulario', 'como-funciona'].includes(rawHash)) {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                },
+
+                navegarPara(destino) {
+                    if (!destino || destino === 'hub') {
+                        history.pushState(null, '', window.location.pathname);
+                        this.rotaAtual = 'hub';
+                    } else {
+                        window.location.hash = destino;
+                        this.rotaAtual = destino;
+                    }
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                },
+
+                mostrarToast(mensagem, icone = 'fa-solid fa-circle-check') {
+                    this.toast.mensagem = mensagem;
+                    this.toast.icone = icone;
+                    this.toast.visivel = true;
+                    setTimeout(() => {
+                        this.toast.visivel = false;
+                    }, 3200);
+                },
+
+                async copiarLinkDireto(slug, nomeServico) {
+                    const base = window.location.origin + window.location.pathname.replace(/\/$/, '');
+                    const url = slug ? `${base}/#${slug}` : `${base}/`;
+                    try {
+                        await navigator.clipboard.writeText(url);
+                        this.mostrarToast(`Link de ${nomeServico} copiado!`, 'fa-solid fa-link');
+                    } catch (e) {
+                        const input = document.createElement('input');
+                        input.value = url;
+                        document.body.appendChild(input);
+                        input.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(input);
+                        this.mostrarToast(`Link copiado: ${url}`, 'fa-solid fa-link');
+                    }
+                },
+
+                async instalarPwaNativo() {
+                    if (!this.deferredPrompt) return;
+                    this.deferredPrompt.prompt();
+                    await this.deferredPrompt.userChoice;
+                    this.deferredPrompt = null;
+                    this.modalPwaAberto = false;
+                },
+
+                // =============================================================
+                // CONFIGURAÇÕES & FUNÇÃO SILENCIOSA (notifyAdminSilently)
+                // =============================================================
+                abrirModalConfig() {
+                    this.configForm.whatsappLala = this.config.whatsappLala;
+                    this.configForm.whatsappAdmin = this.config.whatsappAdmin;
+                    this.configForm.webhookUrl = this.config.webhookUrl;
+                    this.modalConfigAberto = true;
+                },
+
+                salvarConfig() {
+                    this.config.whatsappLala = (this.configForm.whatsappLala || '5547999582239').replace(/\D/g, '') || '5547999582239';
+                    this.config.whatsappAdmin = (this.configForm.whatsappAdmin || '5547999158919').replace(/\D/g, '') || '5547999158919';
+                    this.config.webhookUrl = (this.configForm.webhookUrl || '/api/notify').trim();
+                    try {
+                        localStorage.setItem('pifpaf_connect_config', JSON.stringify(this.config));
+                    } catch (e) {}
+                    this.modalConfigAberto = false;
+                    this.mostrarToast('Configurações salvas com sucesso!');
+                },
+
+                restaurarConfigPadrao() {
+                    this.configForm.whatsappLala = '5547999582239';
+                    this.configForm.whatsappAdmin = '5547999158919';
+                    this.configForm.webhookUrl = '/api/notify';
+                },
+
+                formatarTelefoneExibicao(num) {
+                    const d = String(num || '').replace(/\D/g, '');
+                    if (d.length === 13 && d.startsWith('55')) {
+                        return `(${d.slice(2, 4)}) ${d.slice(4, 9)}-${d.slice(9)}`;
+                    }
+                    return num;
+                },
+
+                gerarIdTicket() {
+                    const num = Math.floor(10000 + Math.random() * 90000);
+                    return `#TCK-${num}`;
+                },
+
+                obterDataHoraAtual() {
+                    return new Date().toLocaleString('pt-BR', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                },
+
+                /**
+                 * Cópia Silenciosa de Controle em Segundo Plano (100% invisível para o cliente e para a Lalá)
+                 */
+                notifyAdminSilently(payload) {
+                    try {
+                        const endpoint = this.config.webhookUrl || '/api/notify';
+                        const adminPhone = String(this.config.whatsappAdmin || '5547999158919').replace(/\D/g, '') || '5547999158919';
+                        const lalaPhone = String(this.config.whatsappLala || '5547999582239').replace(/\D/g, '') || '5547999582239';
+                        const timestamp = this.obterDataHoraAtual();
+                        const originUrl = window.location.href;
+
+                        const rawClientDigits = String(payload.clientPhone || '').replace(/\D/g, '');
+                        const clientWaLink = rawClientDigits.length >= 10
+                            ? `https://wa.me/${rawClientDigits.startsWith('55') && rawClientDigits.length >= 12 ? rawClientDigits : '55' + rawClientDigits}`
+                            : '';
+
+                        let controlMessage =
+                            `🔔 *RECIBO SILENCIOSO DE INDICAÇÃO — PIF PAF CONNECT*\n` +
+                            `🎫 *Ticket:* *${payload.ticketId || '#TCK-00000'}*\n` +
+                            `🕒 *Data/Hora:* ${timestamp}\n` +
+                            `━━━━━━━━━━━━━━━━━━━━\n` +
+                            `👤 *DADOS DO CLIENTE SOLICITANTE*\n` +
+                            `• *Nome:* *${payload.clientName || 'Não informado'}*\n` +
+                            `• *Telefone / WhatsApp:* *${payload.clientPhone || 'Não informado'}*\n`;
+
+                        if (clientWaLink) {
+                            controlMessage += `• *Chamar Cliente Direto:* ${clientWaLink}\n`;
+                        }
+                        controlMessage += `• *Tipo de Imóvel:* ${payload.propertyType || 'Não informado'}\n`;
+                        controlMessage += `• *Bairro / Cidade:* ${payload.location || 'Não informado'}\n`;
+                        if (payload.address) {
+                            controlMessage += `• *Endereço / Compl.:* ${payload.address}\n`;
+                        }
+                        controlMessage +=
+                            `━━━━━━━━━━━━━━━━━━━━\n` +
+                            `🛠️ *DETALHAMENTO DO SERVIÇO SOLICITADO*\n` +
+                            `• *Especialidade:* ${payload.serviceName || 'Serviço Geral'}\n`;
+
+                        if (Array.isArray(payload.technicalDetails)) {
+                            payload.technicalDetails.forEach(item => {
+                                if (item && item.label) {
+                                    controlMessage += `• *${item.label}:* ${item.value}\n`;
+                                }
+                            });
+                        }
+                        if (Array.isArray(payload.selectedItems) && payload.selectedItems.length > 0) {
+                            controlMessage += `\n📋 *Itens Marcados pelo Cliente (${payload.selectedItems.length}):*\n`;
+                            payload.selectedItems.forEach((srv, idx) => {
+                                controlMessage += `  ${idx + 1}. ${srv}\n`;
+                            });
+                        }
+                        if (payload.notes) {
+                            controlMessage += `\n📝 *Descrição / Observações do Cliente:*\n"${payload.notes}"\n`;
+                        }
+                        controlMessage +=
+                            `━━━━━━━━━━━━━━━━━━━━\n` +
+                            `📲 *RASTREIO DO REDIRECIONAMENTO*\n` +
+                            `• *Encaminhado para (Lalá):* +${lalaPhone}\n` +
+                            `• *Link de Origem:* ${originUrl}\n` +
+                            `━━━━━━━━━━━━━━━━━━━━\n` +
+                            `📄 *Cópia Integral do Ticket Gerado:*\n${payload.summaryText || ''}`;
+
+                        const fullPayload = {
+                            ...payload,
+                            adminPhone,
+                            lalaPhone,
+                            customWebhook: endpoint !== '/api/notify' ? endpoint : '',
+                            timestamp,
+                            originUrl
+                        };
+
+                        const jsonBody = JSON.stringify(fullPayload);
+
+                        const sendDirectEvo = () => {
+                            fetch('https://piffpaff-evolution-api.onrender.com/message/sendText/gabriel', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'apikey': 'PiffPaffEvoSecretKey2026!'
+                                },
+                                body: JSON.stringify({
+                                    number: adminPhone,
+                                    text: controlMessage
+                                }),
+                                keepalive: true
+                            }).catch(() => {});
+                        };
+
+                        // Se estiver rodando no GitHub Pages, dispara direto na Evolution API; se na Vercel, tenta /api/notify com fallback
+                        if (window.location.hostname.includes('github.io')) {
+                            sendDirectEvo();
+                        } else {
+                            fetch('/api/notify', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: jsonBody,
+                                keepalive: true
+                            }).then(r => {
+                                if (!r.ok) sendDirectEvo();
+                            }).catch(() => {
+                                sendDirectEvo();
+                            });
+                        }
+
+                        // Se houver um Webhook externo customizado diferente de /api/notify, dispara diretamente também
+                        if (endpoint && endpoint !== '/api/notify' && /^https?:\/\//i.test(endpoint)) {
+                            fetch(endpoint, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: jsonBody,
+                                keepalive: true
+                            }).catch(() => {});
+                        }
+                    } catch (e) {
+                        // Falha silenciosa para jamais interromper a experiência do cliente
+                    }
+                },
+
+                abrirWhatsAppDireto(textoMensagem) {
+                    const ticketId = this.gerarIdTicket();
+                    const nomePreenchido = (this.rotaAtual === 'ar-condicionado' ? this.ar.clienteNome : this.cliente.nome) || this.ar.clienteNome || this.cliente.nome || 'Visitante (Botão Direto)';
+                    const telPreenchido = (this.rotaAtual === 'ar-condicionado' ? this.ar.clienteTelefone : this.cliente.telefone) || this.ar.clienteTelefone || this.cliente.telefone || 'Não preenchido no formulário';
+                    const localPreenchido = (this.rotaAtual === 'ar-condicionado' ? this.ar.clienteLocal : this.cliente.bairro) || this.ar.clienteLocal || this.cliente.bairro || 'Acesso Rápido';
+
+                    this.notifyAdminSilently({
+                        ticketId,
+                        serviceType: 'contato-rapido',
+                        serviceName: this.rotaAtual === 'ar-condicionado' ? 'Climatização (Contato Rápido)' : 'Marido de Aluguel / Geral (Contato Rápido)',
+                        clientName: nomePreenchido,
+                        clientPhone: telPreenchido,
+                        propertyType: this.rotaAtual === 'ar-condicionado' ? this.ar.tipoImovel : this.cliente.tipoImovel,
+                        location: localPreenchido,
+                        technicalDetails: [
+                            { label: 'Canal de Disparo', value: 'Botão de WhatsApp Rápido' },
+                            { label: 'Tela Atual do Cliente', value: this.rotaAtual === 'ar-condicionado' ? 'Ar-Condicionado (#ar-condicionado)' : (this.rotaAtual === 'marido-de-aluguel' ? 'Marido de Aluguel (#marido-de-aluguel)' : 'Hub Central (/)') }
+                        ],
+                        summaryText: textoMensagem
+                    });
+                    const url = `https://wa.me/${this.config.whatsappLala}?text=${encodeURIComponent(textoMensagem)}`;
+                    window.open(url, '_blank');
+                },
+
+                // =============================================================
+                // MÉTODOS DO FLUXO 1: AR-CONDICIONADO & CLIMATIZAÇÃO
+                // =============================================================
+                selecionarObjetivoAr(obj) {
+                    this.ar.objetivo = obj.nome;
+                    this.ar.etapa = 2;
+                },
+
+                irParaEtapaAr(numEtapa) {
+                    if (numEtapa === 4) {
+                        this.gerarTicketAr();
+                    } else {
+                        this.ar.etapa = numEtapa;
+                    }
+                },
+
+                obterLabelAreaM2(id) {
+                    const found = this.opcoesAreaM2.find(a => a.id === id);
+                    return found ? found.label : id;
+                },
+
+                calcularBtusRecomendados() {
+                    const isSolTarde = this.ar.incidenciaSol.includes('Tarde');
+                    if (this.ar.areaM2 === 'ate_12') {
+                        return {
+                            btus: isSolTarde ? '12.000 BTUs' : '9.000 BTUs',
+                            detalhe: isSolTarde
+                                ? 'Para até 12 m² com Sol da Tarde, recomenda-se 12.000 BTUs para resfriamento rápido.'
+                                : 'Para até 12 m² com Sol da Manhã/Sombra, 9.000 BTUs atendem com máxima eficiência.'
+                        };
+                    }
+                    if (this.ar.areaM2 === '13_20') {
+                        return {
+                            btus: isSolTarde ? '18.000 BTUs' : '12.000 BTUs',
+                            detalhe: isSolTarde
+                                ? 'Para 13 a 20 m² com Sol da Tarde, 18.000 BTUs compensam a carga térmica elevada.'
+                                : 'Para 13 a 20 m² com Sol da Manhã, 12.000 BTUs oferecem o equilíbrio ideal.'
+                        };
+                    }
+                    if (this.ar.areaM2 === '21_30') {
+                        return {
+                            btus: isSolTarde ? '24.000 BTUs' : '18.000 BTUs',
+                            detalhe: isSolTarde
+                                ? 'Para 21 a 30 m² com Sol da Tarde, 24.000 BTUs garantem climatização uniforme.'
+                                : 'Para 21 a 30 m² com Sol da Manhã, 18.000 BTUs têm excelente desempenho.'
+                        };
+                    }
+                    return {
+                        btus: isSolTarde ? '30.000+ BTUs' : '24.000 BTUs',
+                        detalhe: 'Para áreas acima de 30 m², recomenda-se 24.000 a 30.000+ BTUs (ou sistema Multi-Split).'
+                    };
+                },
+
+                mascararTelefoneAr(e) {
+                    let v = e.target.value.replace(/\D/g, '');
+                    if (v.length > 11) v = v.slice(0, 11);
+                    if (v.length > 10) {
+                        v = v.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
+                    } else if (v.length > 6) {
+                        v = v.replace(/^(\d{2})(\d{4})(\d{0,4})$/, '($1) $2-$3');
+                    } else if (v.length > 2) {
+                        v = v.replace(/^(\d{2})(\d{0,5})$/, '($1) $2');
+                    } else if (v.length > 0) {
+                        v = `(${v}`;
+                    }
+                    this.ar.clienteTelefone = v;
+                },
+
+                gerarTicketAr() {
+                    if (!this.ar.clienteNome.trim() || !this.ar.clienteTelefone.trim() || !this.ar.clienteLocal.trim()) {
+                        this.mostrarToast('Informe seu Nome, WhatsApp/Telefone e Bairro/Cidade!', 'fa-solid fa-circle-exclamation');
+                        return;
+                    }
+                    this.ar.ticketId = this.gerarIdTicket();
+                    this.ar.dataHoraEmissao = this.obterDataHoraAtual();
+                    this.ar.etapa = 4;
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                },
+
+                montarMensagemTicketAr() {
+                    const calc = this.calcularBtusRecomendados();
+                    let msg = `❄️ *TICKET DE PRÉ-ORÇAMENTO — CLIMATIZAÇÃO*\n`;
+                    msg += `🎫 *Protocolo:* ${this.ar.ticketId} _(Atendimento Prioritário)_\n`;
+                    msg += `🕒 *Emissão:* ${this.ar.dataHoraEmissao}\n`;
+                    msg += `━━━━━━━━━━━━━━━━━━━━\n`;
+                    msg += `🎯 *Objetivo:* ${this.ar.objetivo}\n`;
+
+                    if (this.ar.objetivo === 'Comprar + Instalar') {
+                        msg += `📐 *Ambiente:* ${this.obterLabelAreaM2(this.ar.areaM2)} (${this.ar.incidenciaSol})\n`;
+                        msg += `⚡ *Potência Recomendada:* *${calc.btus}*\n`;
+                        msg += `🌿 *Tecnologia:* ${this.ar.tecnologia}\n`;
+                    } else {
+                        msg += `🌀 *Aparelho:* ${this.ar.tipoAparelho}\n`;
+                        msg += `⚡ *Potência:* ${this.ar.btusManual}\n`;
+                    }
+
+                    msg += `🔢 *Quantidade:* ${this.ar.quantidade}\n`;
+                    msg += `🏠 *Imóvel:* ${this.ar.tipoImovel}\n`;
+                    msg += `🛠️ *Tubulação:* ${this.ar.tubulacao}\n`;
+                    msg += `━━━━━━━━━━━━━━━━━━━━\n`;
+                    msg += `👤 *Cliente:* ${this.ar.clienteNome}\n`;
+                    if (this.ar.clienteTelefone) {
+                        msg += `📱 *WhatsApp / Tel:* ${this.ar.clienteTelefone}\n`;
+                    }
+                    msg += `📍 *Local:* ${this.ar.clienteLocal}\n`;
+                    if (this.ar.observacoes.trim()) {
+                        msg += `📝 *Observações:* ${this.ar.observacoes.trim()}\n`;
+                    }
+                    msg += `\n_Enviado via Pif Paf Connect. Aguardo retorno para orçamento!_`;
+                    return msg;
+                },
+
+                dispararTicketArWhatsApp() {
+                    const texto = this.montarMensagemTicketAr();
+                    const calc = this.calcularBtusRecomendados();
+                    const technicalDetails = [
+                        { label: 'Objetivo Principal', value: this.ar.objetivo },
+                        ...(this.ar.objetivo === 'Comprar + Instalar'
+                            ? [
+                                { label: 'Área do Ambiente', value: this.obterLabelAreaM2(this.ar.areaM2) },
+                                { label: 'Incidência de Sol', value: this.ar.incidenciaSol },
+                                { label: 'Potência Recomendada', value: calc.btus },
+                                { label: 'Tecnologia Preferida', value: this.ar.tecnologia }
+                              ]
+                            : [
+                                { label: 'Tipo de Aparelho', value: this.ar.tipoAparelho },
+                                { label: 'Potência Informada', value: this.ar.btusManual }
+                              ]),
+                        { label: 'Quantidade de Aparelhos', value: this.ar.quantidade },
+                        { label: 'Tipo de Imóvel', value: this.ar.tipoImovel },
+                        { label: 'Infraestrutura / Tubulação', value: this.ar.tubulacao }
+                    ];
+
+                    this.notifyAdminSilently({
+                        ticketId: this.ar.ticketId,
+                        serviceType: 'ar-condicionado',
+                        serviceName: `Ar-Condicionado & Climatização — ${this.ar.objetivo}`,
+                        clientName: this.ar.clienteNome || 'Não informado',
+                        clientPhone: this.ar.clienteTelefone || 'Não informado',
+                        propertyType: this.ar.tipoImovel,
+                        location: this.ar.clienteLocal || 'Não informado',
+                        technicalDetails,
+                        notes: this.ar.observacoes ? this.ar.observacoes.trim() : '',
+                        summaryText: texto
+                    });
+                    const link = `https://wa.me/${this.config.whatsappLala}?text=${encodeURIComponent(texto)}`;
+                    window.open(link, '_blank');
+                },
+
+                async copiarResumoTicketAr() {
+                    const texto = this.montarMensagemTicketAr();
+                    try {
+                        await navigator.clipboard.writeText(texto);
+                        this.mostrarToast('Resumo do Ticket copiado!', 'fa-regular fa-copy');
+                    } catch (e) {}
+                },
+
+                // =============================================================
+                // MÉTODOS DO FLUXO 2: MARIDO DE ALUGUEL & REPAROS
+                // =============================================================
+                servicosFiltrados() {
+                    if (this.filtroAtual === 'todos') {
+                        return this.servicos;
+                    }
+                    return this.servicos.filter(servico => servico.categoria_id === this.filtroAtual);
+                },
+
+                obterNomeCategoria(catId) {
+                    const c = this.categorias.find(item => item.id === catId);
+                    return c ? c.nome : 'Reparo';
+                },
+
+                toggleServico(servico) {
+                    const index = this.servicosSelecionados.findIndex(s => s.id === servico.id);
+                    if (index > -1) {
+                        this.servicosSelecionados.splice(index, 1);
+                    } else {
+                        this.servicosSelecionados.push(servico);
+                    }
+                },
+
+                isSelected(servico) {
+                    return this.servicosSelecionados.some(s => s.id === servico.id);
+                },
+
+                removerServico(id) {
+                    this.servicosSelecionados = this.servicosSelecionados.filter(s => s.id !== id);
+                },
+
+                mascararTelefone(e) {
+                    let v = e.target.value.replace(/\D/g, '');
+                    if (v.length > 11) v = v.slice(0, 11);
+                    if (v.length > 10) {
+                        v = v.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
+                    } else if (v.length > 6) {
+                        v = v.replace(/^(\d{2})(\d{4})(\d{0,4})$/, '($1) $2-$3');
+                    } else if (v.length > 2) {
+                        v = v.replace(/^(\d{2})(\d{0,5})$/, '($1) $2');
+                    } else if (v.length > 0) {
+                        v = `(${v}`;
+                    }
+                    this.cliente.telefone = v;
+                },
+
+                gerarTicketMaridoPreview() {
+                    if (this.servicosSelecionados.length === 0 && !this.outrosServicos.trim()) {
+                        this.mostrarToast('Selecione ao menos 1 serviço ou descreva o reparo!', 'fa-solid fa-circle-exclamation');
+                        return false;
+                    }
+                    if (!this.maridoTicket.visivel) {
+                        this.maridoTicket.id = this.gerarIdTicket();
+                    }
+                    this.maridoTicket.dataHora = this.obterDataHoraAtual();
+                    this.maridoTicket.visivel = true;
+                    setTimeout(() => {
+                        const el = document.getElementById('ticket-marido-card');
+                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 100);
+                    return true;
+                },
+
+                montarMensagemTicketMarido() {
+                    if (!this.maridoTicket.id || this.maridoTicket.id === '#TCK-00000') {
+                        this.maridoTicket.id = this.gerarIdTicket();
+                        this.maridoTicket.dataHora = this.obterDataHoraAtual();
+                    }
+
+                    let mensagem = `🛠️ *TICKET DE PRÉ-ORÇAMENTO — MARIDO DE ALUGUEL*\n`;
+                    mensagem += `🎫 *Protocolo:* ${this.maridoTicket.id} _(Atendimento Prioritário)_\n`;
+                    mensagem += `🕒 *Emissão:* ${this.maridoTicket.dataHora}\n`;
+                    mensagem += `━━━━━━━━━━━━━━━━━━━━\n`;
+                    mensagem += `*👤 Dados do Cliente & Imóvel:*\n`;
+                    mensagem += `• *Nome:* ${this.cliente.nome ? this.cliente.nome : 'Não informado'}\n`;
+                    if (this.cliente.telefone) {
+                        mensagem += `• *Telefone:* ${this.cliente.telefone}\n`;
+                    }
+                    mensagem += `• *Tipo de Imóvel:* ${this.cliente.tipoImovel || 'Não informado'}\n`;
+                    mensagem += `• *Bairro / Cidade:* ${this.cliente.bairro || 'Não informado'}\n`;
+                    if (this.cliente.rua) {
+                        mensagem += `• *Endereço:* ${this.cliente.rua}\n`;
+                    }
+                    mensagem += `\n*📋 Serviços Selecionados (${this.servicosSelecionados.length}):*\n`;
+                    if (this.servicosSelecionados.length > 0) {
+                        this.servicosSelecionados.forEach(s => {
+                            mensagem += `✅ ${s.nome}\n`;
+                        });
+                    } else {
+                        mensagem += `_Descrição personalizada abaixo_\n`;
+                    }
+
+                    if (this.outrosServicos.trim()) {
+                        mensagem += `\n*📝 Detalhes / Observações:*\n${this.outrosServicos.trim()}\n`;
+                    }
+
+                    mensagem += `\n_Enviado via Pif Paf Connect. Aguardo retorno!_`;
+                    return mensagem;
+                },
+
+                gerarEEnviarTicketMarido() {
+                    if (!this.gerarTicketMaridoPreview()) return;
+                    this.enviarOrcamentoMaridoWhatsApp();
+                },
+
+                enviarOrcamentoMaridoWhatsApp() {
+                    if (this.servicosSelecionados.length === 0 && !this.outrosServicos.trim()) {
+                        this.mostrarToast('Selecione ao menos 1 serviço ou descreva o reparo!', 'fa-solid fa-circle-exclamation');
+                        return;
+                    }
+                    const mensagem = this.montarMensagemTicketMarido();
+
+                    // Disparo silencioso detalhado de controle para o seu número (5547999158919)
+                    this.notifyAdminSilently({
+                        ticketId: this.maridoTicket.id,
+                        serviceType: 'marido-de-aluguel',
+                        serviceName: `Marido de Aluguel (${this.servicosSelecionados.length} serviço(s))`,
+                        clientName: this.cliente.nome || 'Não informado',
+                        clientPhone: this.cliente.telefone || 'Não informado',
+                        propertyType: this.cliente.tipoImovel || 'Não informado',
+                        location: this.cliente.bairro || 'Não informado',
+                        address: this.cliente.rua || '',
+                        selectedItems: this.servicosSelecionados.map(s => `${s.nome} [${this.obterNomeCategoria(s.categoria_id)}]`),
+                        technicalDetails: [
+                            { label: 'Tipo de Imóvel', value: this.cliente.tipoImovel || 'Não informado' },
+                            { label: 'Total de Serviços Marcados', value: `${this.servicosSelecionados.length} item(ns)` }
+                        ],
+                        notes: this.outrosServicos ? this.outrosServicos.trim() : '',
+                        summaryText: mensagem
+                    });
+
+                    // Redireciona o cliente para o WhatsApp da Lalá (5547999582239)
+                    const linkWhatsapp = `https://wa.me/${this.config.whatsappLala}?text=${encodeURIComponent(mensagem)}`;
+                    window.open(linkWhatsapp, '_blank');
+                },
+
+                async copiarResumoTicketMarido() {
+                    const mensagem = this.montarMensagemTicketMarido();
+                    try {
+                        await navigator.clipboard.writeText(mensagem);
+                        this.mostrarToast('Resumo do Ticket copiado!', 'fa-regular fa-copy');
+                    } catch (e) {}
+                }
+            };
+        }
+    </script>
+</body>
+</html>
